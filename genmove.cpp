@@ -32,7 +32,7 @@ ScoreLcn ngmx_MCS (int r, Board& Brd, int s, int d, bool v) {
   Board B = Brd; // local copy
   ScoreLcn rootsl = flat_MCS(r, B, s, uzM, acc, v, k, BestLcns);
   if (d==0) return rootsl;
-  double bestScr = -2.0;
+  //double bestScr = -2.0;
   return flat_MCS(r, B, s, uzM, acc, v, k, BestLcns);
 }
 
@@ -52,20 +52,23 @@ void init_to_zero(int A[], int n) { int j;
 }
 
 double ratio(int n, int d) {
-  return (d==0) ? double(INFINITY): (double)n/(double)d;
+  return (d==0) ? double(INFNTY): (double)n/(double)d;
 }
 
-double wrate(int wins, int opt_wins, int rollouts) { // zero sum
+int wrate(int wins, int opt_wins, int rollouts) {
   assert(wins+opt_wins==rollouts);
-  if (wins==0) return     0.00000001;
-  if (opt_wins==0) return 0.99999999;
-  return (double)wins/(double)rollouts;
+  return fltToScr(float(wins)/float(rollouts));
 }
-// TODO: more sophisticated ?
+// TODO: more sophisticated ? maybe use length?
 //double score(int wins, int opt_wins, int sum_lengths, int opt_sum_lengths) {
   //return -.5 + (double)wins/(double)ROLLOUTS+ //monte carlo win prob
          //(double)opt_sum_lengths/(double)opt_wins- 
 	 //(double)sum_lengths/(double)wins;
+
+int mysmooth(int wr, int sims) {// if not enough sims, then smooth value
+  if (sims < 70) wr = fltToScr(0.5*(1.0 + scrToFlt(wr)));  
+  return wr;
+}
 
 int rand_move(Board& B) { 
   Playout pl(B);
@@ -131,15 +134,15 @@ void updateInfo(Playout& pl, int turn, int jw) {
     pl.minwinlen[ndx(turn)] = jw/2;
 }
 
-void printInfo(Playout& pl, int s, int r, double winrate) { 
+void printInfo(Playout& pl, int s, int r, int winrate) { 
   //assert(ROLLOUTS == pl.colorScore[0]+pl.colorScore[1]);
   int mywins = pl.colorScore[ndx(s)];
   int owins  = pl.colorScore[ndx(oppnt(s))];
   int mysum = pl.win_length[ndx(s)];
   int osum = pl.win_length[ndx(oppnt(s))];
-  printf("%c wins %.2f after %d sims ", emit(s), winrate,r);
+  printf("%c wins %.2f after %d sims ", emit(s), scrToFlt(winrate),r);
   printf("len %2.2f (oppt %2.2f) scr %2.2f minlen b %d w %d\n\n",
-    ratio(mysum,mywins), ratio(osum,owins), winrate, pl.minwinlen[0], pl.minwinlen[1]);
+    ratio(mysum,mywins), ratio(osum,owins), scrToFlt(winrate), pl.minwinlen[0], pl.minwinlen[1]);
   //showYcore(pl.wins); 
   showBothYcore(pl.winsBW[ndx(s)],pl.winsBW[ndx(oppnt(s))]);
   showBothYcore(pl.AMAF[ndx(s)],pl.AMAF[ndx(oppnt(s))]);
@@ -220,11 +223,6 @@ int sortMPLcn(int MP[], int MPsize, int s, int A[2][TotalGBCells]) { // sort by 
   return MP[0];
 }
 
-double mysmooth(double wr, int sims) {
-  if (sims < 70) wr = 0.5*(1.0+ wr);  // if not enough sims, then smooth value
-  return wr;
-}
-
 ScoreLcn flat_MCS(int rllouts, Board& local, int s, 
   bool useMiai, bool accelerate, bool vrbs, int& MPsize, int MP[]) {  // MP will be MPsize best moves, which defaults to mustplay if there is one
   // accelerate? winners   sublist A[0             .. end_winners]
@@ -247,9 +245,9 @@ ScoreLcn flat_MCS(int rllouts, Board& local, int s,
     updateInfo(pl, turn, just_won);
     if ((just_won==1)&&(!useMiai)) { 
       MP[0] = pl.Avail[just_won];
-      double wr = mysmooth(wrate(pl.colorScore[ndx(s)],pl.colorScore[ndx(oppnt(s))],j+1),j+1);
+      int wr = mysmooth(wrate(pl.colorScore[ndx(s)],pl.colorScore[ndx(oppnt(s))],j+1),j+1);
       if (vrbs) { printf("not using miai: mustplay 1\n"); printInfo(pl,s,j+1,wr); }
-      ScoreLcn sl(0.0, pl.Avail[just_won]); return sl;
+      ScoreLcn sl(0, pl.Avail[just_won]); return sl;
     }
     if (just_won ==1) { // using miai, threat detected
       if (!threat) { // first threat
@@ -261,7 +259,7 @@ ScoreLcn flat_MCS(int rllouts, Board& local, int s,
           return ScoreLcn(0.0, MP[0]);
         }
         if (MPsize==1) {  
-          double wr = mysmooth(wrate(pl.colorScore[ndx(s)],pl.colorScore[ndx(oppnt(s))],j+1),j+1);
+          int wr = mysmooth(wrate(pl.colorScore[ndx(s)],pl.colorScore[ndx(oppnt(s))],j+1),j+1);
           if (vrbs) { printf("using miai: mustplay 1\n"); printInfo(pl, s, j+1, wr); }
           return ScoreLcn(wr, MP[0]);
         } // MPsize > 1
@@ -273,9 +271,9 @@ ScoreLcn flat_MCS(int rllouts, Board& local, int s,
                //threat2 = true; if (vrbs) prtThrtMsg(j,emit(turn),pl.Avail[1],just_won,2); //} //}
     }
     if (just_won == 0) { // found winning move, abort
-      ScoreLcn sl(1.0, pl.Avail[just_won]); // no need to set best moves, we have one winning move
+      ScoreLcn sl(MAXSCORE, pl.Avail[just_won]); // winner, no need to find other best moves
       if (vrbs) { 
-        double wr = wrate(pl.colorScore[ndx(s)],pl.colorScore[ndx(oppnt(s))],j+1);
+        int wr = wrate(pl.colorScore[ndx(s)],pl.colorScore[ndx(oppnt(s))],j+1);
         printf("search found winner move "); printInfo(pl, s, j+1, wr); }
       return sl; //provenWinAbort(pl,turn,j);
     }
@@ -285,7 +283,7 @@ ScoreLcn flat_MCS(int rllouts, Board& local, int s,
     z = sortMPLcn(MP, MPsize, s, pl.AMAF);
     assert(local.board[z]==EMP);
   }
-  double wr = wrate(pl.colorScore[ndx(s)],pl.colorScore[ndx(oppnt(s))],rllouts);
+  int wr = wrate(pl.colorScore[ndx(s)],pl.colorScore[ndx(oppnt(s))],rllouts);
   if (MPsize>1) topKLcns(MPsize, MP, pl.AMAF[ndx(s)]);
   sl = ScoreLcn(wr,z);
   if (vrbs) printInfo(pl, s, rllouts, wr);

@@ -139,7 +139,7 @@ Playout::Playout(Board& B):B(B) { int psn; int j=0;
   memset(AMAF,0,sizeof(AMAF));
   memset(colorScore,0,sizeof(colorScore));
   memset(win_length,0,sizeof(win_length)); 
-  minwinlen[0]= INFINITY; minwinlen[1] = INFINITY;
+  minwinlen[0]= INFNTY; minwinlen[1] = INFNTY;
   for (int q=0; q<TotalGBCells; q++) {inMP[0][q]=true; inMP[1][q]=true;}
 }
 

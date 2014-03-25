@@ -72,7 +72,7 @@ int Node::bestMove() {
   int score = -1; // assume less than any ucb score
   int lcn = 0;
   for (int j=0; j<numChildren; j++) {
-    int score0 = (children[j].node.proofStatus == PROVEN_LOSS) ? INFINITY : children[j].node.stat.n;
+    int score0 = (children[j].node.proofStatus == PROVEN_LOSS) ? INFNTY : children[j].node.stat.n;
     if (score0 > score) {
       score = score0;
       lcn = children[j].lcn;

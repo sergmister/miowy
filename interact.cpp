@@ -115,6 +115,7 @@ void interact(Board& B) { bool useMiai = true; bool accelerate = true;
   int moves = 0;   // when parameter (eg miai-reply) not used
   ScoreLcn sl;
   B.showAll();
+  maxn(32);
   while(!quit) {
     prtHist(h,moves);
     getCommand(cmd,st,lcn);
@@ -139,7 +140,7 @@ void interact(Board& B) { bool useMiai = true; bool accelerate = true;
           }
           //lcn = uct_move   (ROLLOUTS, B, st, useMiai);  // needs debugging
           //lcn = rand_move  (B);
-          printf("score %.2f\n",sl.scr); printMoveMade( Move(st,lcn) );  // continue ...
+          printf("score %.2f\n",scrToFlt(sl.scr)); printMoveMade( Move(st,lcn) );  // continue ...
       default: // specified move
         if (abswin) { printGameAlreadyOver(); break; }
         if ((EMP != st)&&(EMP != B.board[lcn]))  { printIllegal(); break; }

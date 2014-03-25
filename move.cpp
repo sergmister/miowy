@@ -5,6 +5,9 @@
 #include "move.h"
 #include "shuff.h"
 
+int   fltToScr(float x) {return int(x*MAXSCORE); }
+float scrToFlt(int x)   {return float(x)/float(MAXSCORE); } 
+
 void prtMove(Move m) {
   printf("%c",emit(m.s)); printf("["); prtLcn(m.lcn); printf("]"); }
 

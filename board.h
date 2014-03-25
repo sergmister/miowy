@@ -3,7 +3,8 @@
 #include "move.h"
 
 static const int N = 7;
-static const int INFINITY = 9999;
+static const int INFNTY =     999999999;
+static const int MAXSCORE =   99999999;
 
 //  Y-board       N cells per side    N(N+1)/2  total cells
 //  fat board, aka. guarded board with GUARDS extra rows/cols,

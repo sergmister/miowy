@@ -6,6 +6,7 @@ static const int NumNbrs = 6;              // num nbrs of each cell
 extern const int Nbr_offsets[NumNbrs+1] ;  // last = 1st to avoid using %mod
 extern const int Bridge_offsets[NumNbrs] ;
 
+
 struct Move {
   int s;
   int lcn;
@@ -14,11 +15,14 @@ struct Move {
 } ;
 
 struct ScoreLcn {
-  double scr;
+  int scr;   // represents a fraction, with MAXSCORE as denominator
   int lcn;
-  ScoreLcn(double x, int y) : scr(x), lcn(y) {}
+  ScoreLcn(int x, int y) : scr(x), lcn(y) {}
   ScoreLcn() {}
 } ;
+
+extern int   fltToScr(float x) ;
+extern float scrToFlt(int x) ; 
 
 extern void prtMove(Move m) ;
 
