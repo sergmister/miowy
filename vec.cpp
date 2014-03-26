@@ -61,7 +61,7 @@ void showvec(int A[], int n) {
 void copyvec(int A[], int a, int B[], int& b) {
   b = a;
   for (int j=0; j<b; j++) B[j]=A[j];
-  showvec(B,b);
+  //showvec(B,b);
 }
 
 void vectest(int tA[], int a, int tB[], int b) {

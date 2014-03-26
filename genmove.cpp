@@ -8,39 +8,44 @@
 #include "node.h"
 #include "vec.h"
 
-void topKLcns(int& k, int topKL[], int val[]) { // lcns of top k vals, sorted by val[]
+void topKLcns(int topKL[], int& k, int val[]) { // lcns of top k vals, sorted by val[]
   int local[TotalGBCells]; int dummy; copyvec(val, TotalGBCells, local, dummy);
   int j;
   for (j = 0; j<k; j++) {
     int x = index_of_max(local, j, TotalGBCells);
     //printf("%d ",val[x]); 
-    if (local[x]==0) { printf("oops\n"); break; }
+    if (local[x]==0) break; 
     swap(local[x], local[j]);
     topKL[j] = x;
   }
   k = j;
-  printf("top %d moves: ",k);
-  for (int j = 0; j<k; j++) {
-    prtLcn(topKL[j]); printf(" ");
-  }
-  printf("\n");
 }
 
-//ScoreLcn ngmx_MCS (int r, Board& Brd, int s, int d, bool v) {
-  //bool uzM = true; bool acc = true;
-  //int BestLcns[TotalCells]; int k = WDTH;
-  //Board B = Brd; // local copy
-  ////ScoreLcn rootsl = flat_MCS(r, B, s, uzM, acc, v, k, BestLcns);
-  //if (d==0) return rootsl;
-  ////double bestScr = -2.0;
-  ////return flat_MCS(r, B, s, uzM, acc, v, k, BestLcns);
-  //return rootsl;
-//}
+ScoreLcn negIfNec(bool rtClr, ScoreLcn sl) {
+  if (rtClr) return sl;
+  return ScoreLcn(MAXSCORE-sl.scr, sl.lcn);  // negate score
+}
+
+ScoreLcn ngmx_MCS (int r, Board& Bd, int s, bool rtClr, int d, int w, int alf, int bet, bool v) {
+  bool uzM = true; bool acc = true; int Children[TotalCells]; int numCh;
+  Board B = Bd; Playout pl(B); 
+  ScoreLcn rootsl = flat_MCS(r, B, pl, s, uzM, acc, v);
+  if (d==0) return negIfNec(rtClr, rootsl);
+  if (pl.mpsz < pl.numAvail) {
+    copyvec(pl.MP, pl.mpsz, Children, numCh);
+  }
+  else {
+    numCh = w;
+    topKLcns(Children, numCh, pl.AMAF[nx(s)]);
+  }
+  printf("top %d moves: ",numCh);
+  for (int j = 0; j<numCh; j++) { prtLcn(Children[j]); printf(" "); } printf("\n");
+  //int bstScr = -1;
+  return negIfNec(rtClr,rootsl);
+}
 
 void prtPlayoutMsg(int sim, char c, int lcn, int moves) {
-  printf("sim %d: %c wins ",sim,c); 
-  prtLcn(lcn); 
-  printf(" move %d\n",moves);
+  printf("sim %d: %c wins ",sim,c); prtLcn(lcn); printf(" move %d\n",moves);
 }
 
 void prtThrtMsg(int sim, char c, int lcn, int moves, int threatn) {
@@ -239,6 +244,15 @@ ScoreLcn goodMove(Playout& pl, int s, int sims, int maxSims, bool v) { ScoreLcn 
   }
   else { // pl.msz > 1, sims finished without solving
     assert(sims == maxSims);
+    if (pl.mpsz < pl.numAvail) { // nontrivial mustplay, zero out other scores
+      bool inMP[TotalGBCells];
+      for (int x = 0; x < N; x ++) for (int y=0; y< N-x; y++) inMP[fatten(x,y)] = false;
+      for (int m=0; m<pl.mpsz; m++) inMP[pl.MP[m]] = true;
+      for (int x = 0; x < N; x ++) for (int y=0; y< N-x; y++) {
+        int psn = fatten(x,y);
+        if (!inMP[psn]) { pl.AMAF[nx(s)][psn] *=-1; pl.AMAF[nx(opt(s))][psn] *=-1; }
+      }
+    }
     if (pl.wins[nx(s)]>0) {
       sl.scr = wrate(pl.wins[nx(s)], pl.wins[nx(opt(s))], sims, maxSims);
       sl.lcn = index_of_max(pl.AMAF[nx(s)], 0, TotalGBCells); 
