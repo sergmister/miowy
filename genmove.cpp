@@ -30,7 +30,9 @@ ScoreLcn ngmx_MCS (int r, Board& Bd, int s, bool rtClr, int d, int w, int alf, i
   bool uzM = true; bool acc = true; int Children[TotalCells]; int numCh;
   Board B = Bd; Playout pl(B); 
   ScoreLcn rootsl = flat_MCS(r, B, pl, s, uzM, acc, v);
-  if (d==0) return negIfNec(rtClr, rootsl);
+  if (d==0) {printf("d==0, returning"); return negIfNec(rtClr, rootsl); }
+  if (rootsl.scr==MAXSCORE) {printf("found win, returning"); return negIfNec(rtClr, rootsl); }
+  if (rootsl.scr==0) {printf("found loss, returning"); return negIfNec(rtClr, rootsl); }
   if (pl.mpsz < pl.numAvail) {
     copyvec(pl.MP, pl.mpsz, Children, numCh);
   }
