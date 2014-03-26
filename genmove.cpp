@@ -152,20 +152,22 @@ void set_MP(Board& B, Playout& pl, int s, bool useMiai, bool vrbs) {
 //   * if yes, its carrier is itself plus all immediate nbrs in miai
 //   * final mustplay is intersection of all such carriers
 //   * each move in final mustplay has no killer
-  int T[TotalCells]; int threats = 0; int C[TotalCells]; int Csize; int M[TotalCells]; int Msize;
+  int T[TotalCells]; int threats = 0; 
+  int C[TotalCells]; int Csz; 
+  int M[TotalCells]; int Msz;
   if (vrbs) printf("\nsetting mustplay %c \n",emit(s));
   for (int r=0; r<N; r++) { // check every possible move for win, if yes, refine MP
     for (int c=0; c<N-r; c++) {
       int lcn = fatten(r,c);
       Move mv(s,lcn);
-      if ((B.board[lcn]==EMP)&&(is_win(B,mv,useMiai,M,Msize,vrbs))) { // new threat
+      if ((B.board[lcn]==EMP)&&(is_win(B,mv,useMiai,M,Msz,vrbs))) { // new threat
         T[threats++] = lcn;
         if (threats==1) {// first threat, MP <- carrier
-          copyvec(M, Msize, MP, pl.mpsz);
+          copyvec(M, Msz, pl.MP, pl.mpsz);
         }
         else  { // not first threat
-          myintersect(M, Msize, MP, pl.mpsz, C, Csize);
-          copyvec(C, Csize, MP, pl.mpsz);
+          myintersect(M, Msz, pl.MP, pl.mpsz, C, Csz);
+          copyvec(C, Csz, pl.MP, pl.mpsz);
         }
       }
     }
@@ -186,12 +188,12 @@ void myshuffle(Playout& pl, int& end_w, const int& j_w, const bool& acc) {
   }
 }
 
-void threatInit(int MP[], int MPsize, int& k) {  // cycle through mustplay as move[0]
+void threatInit(Playout& pl, int& k) {  // cycle through mustplay as move[0]
   assert(pl.mpsz > 0);
-  assert((k>=0)&&(k<MPsize));
-  int ndx = indexOf(MP[k], pl.Avail, TotalCells);
+  assert((k >= 0)&&(k < pl.mpsz));
+  int ndx = indexOf(pl.MP[k], pl.Avail, TotalCells);
   swap(pl.Avail[0], pl.Avail[ndx]); // next mustplay element
-  k++; if (k==MPsize) k=0;
+  k++; if (k==pl.mpsz) k=0;         // increment k, cyclically
 }
 
 int sortMPLcn(int MP[], int MPsize, int s, int A[2][TotalGBCells]) { // sort by A[][] val
@@ -215,7 +217,7 @@ int sortMPLcn(int MP[], int MPsize, int s, int A[2][TotalGBCells]) { // sort by 
 
 int wrate(int wins, int opt_wins, int sims, int maxSims) {
   assert(wins+opt_wins==sims);
-  int wr = fltToScr(float(wins)/float(rollouts));
+  int wr = fltToScr(float(wins)/float(sims));
   if (sims < maxSims/10) // too few sims, smooth
     return fltToScr(0.5*(1.0 + scrToFlt(wr))); 
   return wr;
@@ -226,35 +228,34 @@ int wrate(int wins, int opt_wins, int sims, int maxSims) {
          //(double)opt_sum_lengths/(double)opt_wins- 
 	 //(double)sum_lengths/(double)wins;
 
-ScoreLcn goodMove(Playout pl&, int s, int sims, int maxSims, bool v) { ScoreLcn sl;
-  if (pl.mpsz==0) {  if (v) printf("mustplay 0 after %d sims\n",r); 
+ScoreLcn goodMove(Playout& pl, int s, int sims, int maxSims, bool v) { ScoreLcn sl;
+  if (pl.mpsz==0) {  if (v) printf("mustplay 0 after %d sims\n", sims); 
     sl.scr = 0; 
-    sl.lcn = pl.Avail[0]; 
+    sl.lcn = pl.MP[0]; 
   }
-  else if (pl.mpsz==1) { if (v) printf("mustplay 1 after %d sims\n",r); 
+  else if (pl.mpsz==1) { if (v) printf("mustplay 1 after %d sims\n", sims); 
     sl.scr = wrate(pl.wins[nx(s)], pl.wins[nx(opt(s))], sims, maxSims);
-    sl.lcn = pl.Avail[0];
+    sl.lcn = pl.MP[0];
   }
   else { // pl.msz > 1, sims finished without solving
-  assert(sims == maxSims);
-  if (pl.wins[nx(s)]>0) {
-    sl.scr = wrate(pl.wins[nx(s)], pl.wins[nx(opt(s))], sims, maxSims);
-    sl.lcn = index_of_max(pl.AMAF[nx(s)], 0, TotalGBCells); 
-  } 
-  else {
-    printf(" no wins but not proven loss ???? \n");
-    sl.scr = 1; // not a proven loss yet...
-    sl.lcn = index_of_max(pl.AMAF[nx(opt(s))], 0, TotalGBCells);
+    assert(sims == maxSims);
+    if (pl.wins[nx(s)]>0) {
+      sl.scr = wrate(pl.wins[nx(s)], pl.wins[nx(opt(s))], sims, maxSims);
+      sl.lcn = index_of_max(pl.AMAF[nx(s)], 0, TotalGBCells); 
+    } 
+    else {
+      printf(" no wins but not proven loss ???? \n");
+      sl.scr = 1; // not a proven loss yet...
+      sl.lcn = index_of_max(pl.AMAF[nx(opt(s))], 0, TotalGBCells);
+    }
   }
   if (v) printInfo(pl, s, sims);
   return sl;
 }
 
-ScoreLcn flat_MCS(int& r, Board& B, Playout& pl, int s, 
-    bool useMiai, bool accelerate, bool vrbs) {  // mustplay left at front of Avail
+ScoreLcn flat_MCS(int& r, Board& B, Playout& pl, int s, bool uzMi, bool acc, bool v) {  // mustplay left at front of Avail
   // accelerate? winners   sublist A[0             .. end_winners]
   //             remainder sublist A[end_winners+1 ..  TotalCells]
-  int MP[7]; // mustplay, restricted to opt winner plus neighbours
   int maxr = r; // kick out early if win/loss
   bool threat = false;  //bool threat2 = false;
   assert(pl.numAvail!=0);
@@ -262,33 +263,32 @@ ScoreLcn flat_MCS(int& r, Board& B, Playout& pl, int s,
   //for (int j=0; j<1; j++) shuffle_interval(pl.Avail,0,pl.numAvail-1);
   int turn; int MPndx = 0;
   for (int j=0; j< r; j++) { 
-    myshuffle(pl, end_winners, just_won, accelerate);
+    myshuffle(pl, end_winners, just_won, acc);
     turn = s;
-    if (threat) threatInit(MP, pl.mpsz, MPndx); 
-    pl.single_playout(turn, just_won, useMiai);
-    //if ((j<2)&&(vrbs))  prtPlayoutMsg(j,emit(turn),pl.Avail[just_won],just_won); // data for user
+    if (threat) threatInit(pl, MPndx); 
+    pl.single_playout(turn, just_won, uzMi);
+    //if ((j<2)&&(v))  prtPlayoutMsg(j,emit(turn),pl.Avail[just_won],just_won); // data for user
     updateInfo(pl, turn, just_won);
-    if ((just_won==1)&&(!useMiai)) { // found mp singleton, update pl and return
-      swap(pl.Avail[0],pl.Avail[just_won]); pl.mpsz = 1; r = j+1; 
-      return goodMove(pl, r, s, vrbs);
+    if ((just_won==1)&&(!uzMi)) { // found mp singleton, update pl and return
+      pl.mpsz = 1; r = j+1; return goodMove(pl, s, r, maxr, v);
     }
     if (just_won == 1) { // using miai, threat detected
       if (!threat) { // first threat
         threat = true; 
-        if (vrbs) prtThrtMsg(j,emit(turn),pl.Avail[1],just_won,1);
-        set_MP(B, pl, MP, turn, useMiai, vrbs); // set mustplay
-        if (pl.mpsz==0||pl.mpsz==1) { r = j+1; return goodMove(pl, r, s, vrbs); }
+        if (v) prtThrtMsg(j,emit(turn),pl.Avail[1],just_won,1);
+        set_MP(B, pl, turn, uzMi, v); // set mustplay
+        if (pl.mpsz==0||pl.mpsz==1) { r = j+1; return goodMove(pl, s, r, maxr, v); }
         //  pl.mpsz > 1 ... insert MP into winners sublist at front of Avail
         for (int q=0; q < pl.mpsz; q++) { 
-          addtoFrontSublist(MP[q], pl.Avail, end_winners, TotalCells);
+          addtoFrontSublist(pl.MP[q], pl.Avail, end_winners, TotalCells);
         }
       }
     }
     if (just_won == 0) { // found win
       r = j+1;
-      if (vrbs) { printf("search found win "); printInfo(pl, s, j+1, wr); }
+      if (v) { printf("search found win "); printInfo(pl, s, r); }
       return ScoreLcn(MAXSCORE, pl.Avail[just_won]);
     }
   } // no win after r sims
-  return goodMove(pl, r, s, vrbs);
+  return goodMove(pl, s, r, maxr, v);
 }

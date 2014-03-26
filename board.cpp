@@ -133,13 +133,12 @@ Playout::Playout(Board& B):B(B) { int psn; int j=0;
       }
   assert(j!=0); // must be available move
   numAvail = j;
-  mpsz = numAvail;
+  mpsz = numAvail;  // only initialize cells when mpsz is less
   memset(wins,0,sizeof(wins));
   memset(cellWins,0,sizeof(cellWins));
   memset(AMAF,0,sizeof(AMAF));
   memset(win_length,0,sizeof(win_length)); 
-  minwinlen[0]= INFNTY; minwinlen[1] = INFNTY;
-  for (int q=0; q<TotalGBCells; q++) {inMP[0][q]=true; inMP[1][q]=true;}
+  for (int t=0; t<=1; t++) minwinlen[t] = INFNTY;
 }
 
 void Playout::listLive(int k) {

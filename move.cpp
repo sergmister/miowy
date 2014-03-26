@@ -36,11 +36,12 @@ void show_winners(struct Board B, int st, bool useMiai) {
 }
 
 bool is_win(struct Board& B, Move mv, bool useMiai, int C[], int& csize, bool vrbs) { 
+// if winmove, carrier is cell plus any nbring self-miai
   assert(B.board[mv.lcn]==EMP);
   int bd_set = BRDR_NIL;
   Board local = B;
   local.move(mv, useMiai, bd_set);
-  if (useMiai && has_win(bd_set)) { // compute miai carrier of winning move
+  if (useMiai && has_win(bd_set)) { // leave carrier of winmove in C[]
     C[0] = mv.lcn; csize = 1;
     for (int q = 0; q < NumNbrs; q++) {
       int xLcn = mv.lcn+Nbr_offsets[q];

@@ -7,7 +7,7 @@ static const int WDTH = 10;  // negamax search width
 
 int      rand_move     (Board&) ;
 int      rand_miai_move(Board&, int s) ;
-ScoreLcn flat_MCS (int& r, Board&, Playout&, int s, bool useMiai, bool accelerate, bool vrbs) ;
+ScoreLcn flat_MCS (int&, Board&, Playout&, int s, bool uzMi, bool acc, bool v) ;
 ScoreLcn ngmx_MCS (int rollouts, Board&, int s, bool vrbs) ;
 int      uct_move (int rollouts, Board&, int s, bool useMiai) ;
 #endif

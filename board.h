@@ -91,13 +91,13 @@ struct Board {
 } ;
 
 struct Playout {
-  int Avail [TotalCells]; // locations of available cells
+  int Avail[TotalCells];  // locations of available cells
   int numAvail;           // number of available cells
-  int mpsz;               // size of mustplay (left at front of Avail)
+  int MP[TotalCells];     // locations of mustplay cells
+  int mpsz;               // mustplay size
   int wins[2]; // black, white
   int cellWins[2][TotalGBCells];
   int AMAF[2][TotalGBCells];
-  bool inMP[2][TotalGBCells];
   int minwinlen[2];
   int win_length[2]; // sum (over wins) of stones in win
   Playout(Board& B); // constructor

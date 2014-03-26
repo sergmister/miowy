@@ -85,37 +85,32 @@ void prtHist(Move h[], int n) {
   printf("\n");
 }
 
-ScoreLcn easyMove(Board& B, int st, Move h[], int mvs, bool v) { // already have winning vc, so free move, so... ?
-  int bstM[TotalCells]; int k = 3;
-  printMiaiWin(st, st);                                      // ... so good quiet move is opt's best move
+ScoreLcn easyMove(Board& B, int st, Move h[], int mvs, bool v) { // win vc prior to mv, so... 
+  printMiaiWin(st, st);                                      // ... quiet move is opnt-best-move
   updateConnViaHistory(B, st, false, h, mvs);                // update conn'y with no miai
-  ScoreLcn osl = flat_MCS(ROLLOUTS, B, opt(st), 
-    false, false, v, k, bstM); // best **opponent** move (no miai, no accel)
-  return ScoreLcn(1.0-osl.scr, osl.lcn);
+  Playout pl(B); int r = ROLLOUTS;
+  ScoreLcn osl = flat_MCS(r,B,pl,opt(st),false,true,v); // best **opnt** move (no miai, yes accel)
+  return ScoreLcn(MAXSCORE-osl.scr, osl.lcn);
 }
 
 ScoreLcn futileMove(Board& B, int st, Move h[], int mvs, bool v) { // miai loss before moving
-  int bstM[TotalCells]; int k = 3;
   printMiaiWin(st,opt(st)); 
   updateConnViaHistory(B, st, false, h, mvs);         // update conn'y with no miai
   updateConnViaHistory(B, opt(st), false, h, mvs);         // update conn'y with no miai
-  ScoreLcn sl = flat_MCS(ROLLOUTS, B, opt(st), 
-    false, true, v, k, bstM);  // best opt move (no miai, yes accel)
-  //return ScoreLcn(0.0, rand_miai_move(B,opt(st))); 
-  return sl;
+  Playout pl(B); int r = ROLLOUTS;
+  ScoreLcn osl = flat_MCS(r,B,pl,opt(st),false,true,v); // best **opnt** move (no miai, yes accel)
+  return ScoreLcn(MAXSCORE-osl.scr, osl.lcn);
 }
 
-void interact(Board& B) { bool useMiai = true; bool accelerate = true;
+void interact(Board& B) { bool useMiai = true; bool acc = true;
   assert(B.num(EMP)==TotalCells); displayHelp(); 
   Move h[TotalCells]; // history
-  int bestMoves[TotalCells]; int kmvs = 5; // for flat_MCS()
   bool quit = false; bool abswin = false;
-  int st, lcn, bdst; bool vrbs = true;
+  int st, lcn, bdst; bool v = true; // verbose
   char cmd = UNUSED_CH;  // initialize to unused character
   int moves = 0;   // when parameter (eg miai-reply) not used
   ScoreLcn sl;
   B.showAll();
-  maxn(32);
   while(!quit) {
     prtHist(h,moves);
     getCommand(cmd,st,lcn);
@@ -129,13 +124,13 @@ void interact(Board& B) { bool useMiai = true; bool accelerate = true;
       case GENMOVE_CH:
           if (abswin)  { printGameAlreadyOver(); break; }
           if (has_win(updateConnViaHistory(B, st, useMiai, h, moves))) { 
-            sl = easyMove(B, st, h, moves, vrbs); lcn = sl.lcn; }
+            sl = easyMove(B, st, h, moves, v); lcn = sl.lcn; }
           else if (has_win(updateConnViaHistory(B, opt(st), true, h, moves))) { 
-            sl = futileMove(B, st, h, moves, vrbs); lcn = sl.lcn; }
-          else {
-            sl = flat_MCS(ROLLOUTS, B, st, useMiai, accelerate, vrbs, kmvs, bestMoves);
-            if (kmvs == 0)
-              sl = flat_MCS(ROLLOUTS, B, st, false, accelerate, vrbs, kmvs, bestMoves);
+            sl = futileMove(B, st, h, moves, v); lcn = sl.lcn; }
+          else { Playout pl(B); int r = ROLLOUTS;
+            sl = flat_MCS(r, B, pl, st, useMiai, acc, v);
+            if (pl.mpsz == 0) // mustplay 0, search without miai
+              sl = flat_MCS(r, B, pl, st, false, acc, v);
             lcn = sl.lcn;
           }
           //lcn = uct_move   (ROLLOUTS, B, st, useMiai);  // needs debugging

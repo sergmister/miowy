@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cassert>
 #include "vec.h"
+#include "board.h"
 
 int index_of_max(int A[], int k, int n) { // index of max element in A[k..n-1]
   int x = k; 
@@ -53,13 +54,14 @@ void myintersect(int A[], int a, int B[], int b, int C[], int& c) {
 }
 
 void showvec(int A[], int n) {
-  for (int j=0; j<n; j++) printf("%d ",A[j]);
+  for (int j=0; j<n; j++) { prtLcn(A[j]); printf(" "); }
   printf("\n");
 }
 
 void copyvec(int A[], int a, int B[], int& b) {
   b = a;
   for (int j=0; j<b; j++) B[j]=A[j];
+  showvec(B,b);
 }
 
 void vectest(int tA[], int a, int tB[], int b) {
