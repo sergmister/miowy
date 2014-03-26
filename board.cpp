@@ -103,13 +103,13 @@ void Playout::single_playout(int& trn, int& k, bool useMiai) {
     miReply = L.move(mv, useMiai, bd_set);
     if (useMiai) {
       // played into oppt miai ?
-      int resp = L.reply[ndx(oppnt(turn))][Avail[k]];
+      int resp = L.reply[nx(opt(turn))][Avail[k]];
       if (resp!=Avail[k]) {int z; //prep for autorespond on next move
         for (z=k+1; Avail[z]!=resp; z++) ;
         //if (z>=TotalCells) {
          //printf("miai problem   resp %d k %d turn %d\n",resp,k,turn);
          //B.show(); L.show(); shapeAs(RHOMBUS,Avail);
-         //L.showMi(oppnt(turn)); B.showMi(oppnt(turn));
+         //L.showMi(opt(turn)); B.showMi(opt(turn));
          //L.showMi(turn); B.showMi(turn);
        // }
         assert(z<TotalCells); 
@@ -117,10 +117,10 @@ void Playout::single_playout(int& trn, int& k, bool useMiai) {
         swap(Avail[k+1],Avail[z]);
       }
     }
-    turn = oppnt(turn);
+    turn = opt(turn);
   } while (!has_win(bd_set)) ; 
   if (k==0) {prtLcn(Avail[0]); printf(" wins on 1st move of playout\n"); L.showAll();}
-  trn = oppnt(turn);
+  trn = opt(turn);
 }
 
 Playout::Playout(Board& B):B(B) { int psn; int j=0;
@@ -135,9 +135,8 @@ Playout::Playout(Board& B):B(B) { int psn; int j=0;
   numAvail = j;
   mpsz = numAvail;
   memset(wins,0,sizeof(wins));
-  memset(winsBW,0,sizeof(winsBW));
+  memset(cellWins,0,sizeof(cellWins));
   memset(AMAF,0,sizeof(AMAF));
-  memset(colorScore,0,sizeof(colorScore));
   memset(win_length,0,sizeof(win_length)); 
   minwinlen[0]= INFNTY; minwinlen[1] = INFNTY;
   for (int q=0; q<TotalGBCells; q++) {inMP[0][q]=true; inMP[1][q]=true;}
@@ -169,7 +168,7 @@ void Board::showMi(int s) { emitString(s), printf(" miai\n");
     for (int k = 0; k < j; k++) 
       printf(" ");
     for (int k = 0; k < N-j; k++) {
-      prMiai(reply[ndx(s)][psn],psn); 
+      prMiai(reply[nx(s)][psn],psn); 
       psn++; 
     } 
     printf("\n");
@@ -181,11 +180,11 @@ void Board::showBothMi() { int psn;
   for (int r = 0; r < N; r++) {
     for (int k = 0; k < r; k++) printf("  ");
     for (int c = 0; c < N-r; c++) { psn = fatten(r,c);
-      prMiai(reply[ndx(BLK)][psn],psn);
+      prMiai(reply[nx(BLK)][psn],psn);
     }
     for (int k = 0; k < 2*r; k++) printf("  ");
     for (int c = 0; c < N-r; c++) { psn = fatten(r,c);
-      prMiai(reply[ndx(WHT)][psn],psn);
+      prMiai(reply[nx(WHT)][psn],psn);
     }
     printf("\n");
   }
@@ -195,11 +194,11 @@ void Board::showMiaiPar() { int psn;
   for (int r = 0; r < N; r++) {
     for (int k = 0; k < r; k++) printf("  ");
     for (int c = 0; c < N-r; c++) { psn = fatten(r,c);
-      prMiai(reply[ndx(BLK)][psn],psn);
+      prMiai(reply[nx(BLK)][psn],psn);
     }
     for (int k = 0; k < 2*r; k++) printf("  ");
     for (int c = 0; c < N-r; c++) { psn = fatten(r,c);
-      prMiai(reply[ndx(WHT)][psn],psn);
+      prMiai(reply[nx(WHT)][psn],psn);
     }
     for (int k = 0; k < 2*r; k++) printf("  ");
     for (int c = 0; c < N-r; c++) { psn = fatten(r,c);
@@ -250,7 +249,7 @@ void Board::showAll() {
 
 void Board::zero_connectivity(int stone, bool remS) { //printf("Z ");
   for (int j=0; j<TotalGBCells; j++) {
-    reply[ndx(stone)][j] = j;
+    reply[nx(stone)][j] = j;
     if (board[j]==stone) {
       //prtLcn(j);
       p[j]    = j;

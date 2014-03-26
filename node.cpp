@@ -14,7 +14,7 @@ int Node::uct_playout(Board& B, int plyr, bool useMiai) {
     winner = plyr; 
     int moves_to_win;
     pl.single_playout(winner, moves_to_win, useMiai);
-    winner = oppnt(winner);
+    winner = opt(winner);
   }
   else {
     Child& c  = children[bestChildNdx()];
@@ -23,16 +23,16 @@ int Node::uct_playout(Board& B, int plyr, bool useMiai) {
     if (miReply!=c.lcn) {
       //printf("%c",emit(plyr));prtLcn(c.lcn);
       //printf("has miReply");prtLcn(miReply);printf("\n");
-      B.zero_connectivity(oppnt(plyr), false);  // ... but do not remove stones
+      B.zero_connectivity(opt(plyr), false);  // ... but do not remove stones
       //B.showBr();
       // now use stones to update connectivity
       int opponent_bdst;
       for (int j=0; j<TotalGBCells; j++) 
         if (B.board[j]==TMP) {
-          //prtLcn(j); printf(" conn update plyr %c\n",emit(oppnt(plyr)));
+          //prtLcn(j); printf(" conn update plyr %c\n",emit(opt(plyr)));
 	  // need to update opponent's board, but opponent_bdst will not be used
 	  // TODO: move the recomputation of board connectivity into board
-          B.move(Move(oppnt(plyr),j), useMiai, opponent_bdst);
+          B.move(Move(opt(plyr),j), useMiai, opponent_bdst);
         }
     }
     if (has_win(bdset)) { // save recursion, update child stats
@@ -42,7 +42,7 @@ int Node::uct_playout(Board& B, int plyr, bool useMiai) {
       c.node.stat.n++;
       }
     else
-      winner = c.node.uct_playout(B, oppnt(plyr), useMiai);
+      winner = c.node.uct_playout(B, opt(plyr), useMiai);
   }
   // update stats
   stat.n++;

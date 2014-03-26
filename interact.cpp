@@ -42,7 +42,7 @@ void playHex(Board&B, Move h[], int& m, int x, int y) {
   B.show(); }
 
 int updateConnViaHistory(Board& B, int st, bool useMiai, Move h[], int mvs) { int bdst;
-// needed eg if prev oppnt mv hits miai 
+// needed eg if prev opt mv hits miai 
   B.zero_connectivity(st);
   for (int j=0; j<mvs; j++)
     if (st == h[j].s)
@@ -51,7 +51,7 @@ int updateConnViaHistory(Board& B, int st, bool useMiai, Move h[], int mvs) { in
 
 void moveAndUpdate(Board& B, Move mv, Move h[], int& m, bool useMiai, int& bdst, bool& w) { 
   movePlus(B, mv, useMiai, bdst, h[m++]);
-  updateConnViaHistory(B, oppnt(mv.s), useMiai, h, m);
+  updateConnViaHistory(B, opt(mv.s), useMiai, h, m);
   w = has_win(bdst);
   if (w) { // 
     if (useMiai) { // check for absolute win
@@ -71,7 +71,7 @@ void undoMove(Board& B, Move h[], int& moves, bool useMiai, bool& w) {
     w = false; // no moves after winner, so no winner after undo
     B.init(); int pX = h[0].s;  
     updateConnViaHistory(B, pX,        useMiai, h, moves-1); // place pX stones (conn valid ?)
-    updateConnViaHistory(B, oppnt(pX), useMiai, h, moves-1); // place pY stones, update pY conn
+    updateConnViaHistory(B, opt(pX), useMiai, h, moves-1); // place pY stones, update pY conn
     updateConnViaHistory(B, pX,        useMiai, h, moves-1); // (place pX stones), update pX conn
     moves--;
   }
@@ -87,21 +87,21 @@ void prtHist(Move h[], int n) {
 
 ScoreLcn easyMove(Board& B, int st, Move h[], int mvs, bool v) { // already have winning vc, so free move, so... ?
   int bstM[TotalCells]; int k = 3;
-  printMiaiWin(st, st);                                      // ... so good quiet move is oppnt's best move
+  printMiaiWin(st, st);                                      // ... so good quiet move is opt's best move
   updateConnViaHistory(B, st, false, h, mvs);                // update conn'y with no miai
-  ScoreLcn osl = flat_MCS(ROLLOUTS, B, oppnt(st), 
+  ScoreLcn osl = flat_MCS(ROLLOUTS, B, opt(st), 
     false, false, v, k, bstM); // best **opponent** move (no miai, no accel)
   return ScoreLcn(1.0-osl.scr, osl.lcn);
 }
 
 ScoreLcn futileMove(Board& B, int st, Move h[], int mvs, bool v) { // miai loss before moving
   int bstM[TotalCells]; int k = 3;
-  printMiaiWin(st,oppnt(st)); 
+  printMiaiWin(st,opt(st)); 
   updateConnViaHistory(B, st, false, h, mvs);         // update conn'y with no miai
-  updateConnViaHistory(B, oppnt(st), false, h, mvs);         // update conn'y with no miai
-  ScoreLcn sl = flat_MCS(ROLLOUTS, B, oppnt(st), 
-    false, true, v, k, bstM);  // best oppnt move (no miai, yes accel)
-  //return ScoreLcn(0.0, rand_miai_move(B,oppnt(st))); 
+  updateConnViaHistory(B, opt(st), false, h, mvs);         // update conn'y with no miai
+  ScoreLcn sl = flat_MCS(ROLLOUTS, B, opt(st), 
+    false, true, v, k, bstM);  // best opt move (no miai, yes accel)
+  //return ScoreLcn(0.0, rand_miai_move(B,opt(st))); 
   return sl;
 }
 
@@ -130,7 +130,7 @@ void interact(Board& B) { bool useMiai = true; bool accelerate = true;
           if (abswin)  { printGameAlreadyOver(); break; }
           if (has_win(updateConnViaHistory(B, st, useMiai, h, moves))) { 
             sl = easyMove(B, st, h, moves, vrbs); lcn = sl.lcn; }
-          else if (has_win(updateConnViaHistory(B, oppnt(st), true, h, moves))) { 
+          else if (has_win(updateConnViaHistory(B, opt(st), true, h, moves))) { 
             sl = futileMove(B, st, h, moves, vrbs); lcn = sl.lcn; }
           else {
             sl = flat_MCS(ROLLOUTS, B, st, useMiai, accelerate, vrbs, kmvs, bestMoves);

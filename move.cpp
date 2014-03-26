@@ -53,16 +53,16 @@ bool is_win(struct Board& B, Move mv, bool useMiai, int C[], int& csize, bool vr
   return has_win(bd_set);
 }
 
-bool Board::not_in_miai(Move mv) { return reply[ndx(mv.s)][mv.lcn]==mv.lcn ; }
+bool Board::not_in_miai(Move mv) { return reply[nx(mv.s)][mv.lcn]==mv.lcn ; }
 
 void Board::set_miai(int s, int x, int y) { 
-  reply[ndx(s)][x] = y; 
-  reply[ndx(s)][y] = x; }
+  reply[nx(s)][x] = y; 
+  reply[nx(s)][y] = x; }
 
 void Board::release_miai(Move mv) { // WARNING: does not alter miai connectivity
-  int y = reply[ndx(mv.s)][mv.lcn]; 
-  reply[ndx(mv.s)][mv.lcn] = mv.lcn; 
-  reply[ndx(mv.s)][y] = y; }
+  int y = reply[nx(mv.s)][mv.lcn]; 
+  reply[nx(mv.s)][mv.lcn] = mv.lcn; 
+  reply[nx(mv.s)][y] = y; }
 
 void Board::put_stone(Move mv) { 
   assert((board[mv.lcn]==EMP)||(board[mv.lcn]==mv.s)||board[mv.lcn]==TMP); 
@@ -87,10 +87,10 @@ int Board::moveMiaiPart(Move mv, bool useMiai, int& bdset, int cpt) {
 // useMiai true... continue with move( )...
   int nbr,nbrRoot; int lcn = mv.lcn; int s = mv.s;
   release_miai(mv); // your own miai, so connectivity ok
-  int miReply = reply[ndx(oppnt(s))][lcn];
+  int miReply = reply[nx(opt(s))][lcn];
   if (miReply != lcn) {
     //prtLcn(lcn); printf(" released opponent miai\n"); 
-    release_miai(Move(oppnt(s),lcn));
+    release_miai(Move(opt(s),lcn));
   }
   // avoid directional bridge bias: search in random order
   int x, perm[NumNbrs] = {0, 1, 2, 3, 4, 5}; 
@@ -113,11 +113,11 @@ int Board::moveMiaiPart(Move mv, bool useMiai, int& bdset, int cpt) {
         (not_in_miai(mv1)||not_in_miai(mv2))) {
           if (!not_in_miai(mv1)) {
             if (near_edge(c1) && (near_edge(lcn) || near_edge(nbr)))
-              YborderRealign(Move(s,nbr),cpt,c1,reply[ndx(s)][c1],c2);
+              YborderRealign(Move(s,nbr),cpt,c1,reply[nx(s)][c1],c2);
           }
           else if (!not_in_miai(mv2)) {
             if (near_edge(c2) && (near_edge(lcn) || near_edge(nbr)))
-              YborderRealign(Move(s,nbr),cpt,c2,reply[ndx(s)][c2],c1);
+              YborderRealign(Move(s,nbr),cpt,c2,reply[nx(s)][c2],c1);
          }
          else if (Find(p,nbr)!=Find(p,cpt)) {  // new miai
            nbrRoot = Find(p,nbr);
@@ -141,7 +141,7 @@ int Board::moveMiaiPart(Move mv, bool useMiai, int& bdset, int cpt) {
 
 int Board::move(Move mv, bool useMiai, int& bdset) { //bdset comp. from scratch
 // put mv.s on board, update connectivity for mv.s
-// WARNING  oppnt(mv.s) connectivity will be broken if mv.s hits oppnt miai
+// WARNING  opt(mv.s) connectivity will be broken if mv.s hits opt miai
 //   useMiai ? miai adjacency : stone adjacency
 // return opponent miai reply of mv, will be mv.lcn if no miai
   int nbr,nbrRoot,cpt; int lcn = mv.lcn; int s = mv.s;
