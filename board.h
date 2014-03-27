@@ -2,7 +2,7 @@
 #define BOARDY_H
 #include "move.h"
 
-static const int N = 7;
+static const int N = 10;
 static const int INFNTY =     999999999;
 static const int MAXSCORE =   99999999;
 static inline int negScr(int s) {return MAXSCORE-(s);}  
