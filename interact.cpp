@@ -106,7 +106,7 @@ void interact(Board& B) { bool useMiai = true; bool acc = true;
   assert(B.num(EMP)==TotalCells); displayHelp(); 
   Move h[TotalCells]; // history
   bool quit = false; bool abswin = false;
-  int st, lcn, bdst; bool v = true; // verbose
+  int st, lcn, bdst; bool v = false; // verbose
   char cmd = UNUSED_CH;  // initialize to unused character
   int moves = 0;   // when parameter (eg miai-reply) not used
   ScoreLcn sl;
@@ -129,7 +129,7 @@ void interact(Board& B) { bool useMiai = true; bool acc = true;
             sl = futileMove(B, st, h, moves, v); lcn = sl.lcn; }
           else { Playout pl(B); int r = ROLLOUTS;
             //sl = flat_MCS(r, B, pl, st, useMiai, acc, v);
-            sl = ngmx_MCS(r, B, st, true, 4, 7, -1, MAXSCORE+1, v);
+            sl = ngmx_MCS(r, B, st, true, 2, 3, -1, MAXSCORE+1, v);
             if (pl.mpsz == 0) // mustplay 0, search without miai
               sl = flat_MCS(r, B, pl, st, false, acc, v);
             lcn = sl.lcn;

@@ -5,6 +5,7 @@
 static const int N = 7;
 static const int INFNTY =     999999999;
 static const int MAXSCORE =   99999999;
+static inline int negScr(int s) {return MAXSCORE-(s);}  
 
 //  Y-board       N cells per side    N(N+1)/2  total cells
 //  fat board, aka. guarded board with GUARDS extra rows/cols,
@@ -41,8 +42,8 @@ static const char EMP_CH = '.';
 static const char BLK_CH = 'b';
 static const char WHT_CH = 'w';
 
-static inline int opt(int x) {return 3^x;} // black,white are 1,2
-static inline int nx(int x) {return x-1;}  // assume black,white are 1,2
+static inline int nx(int x) {return x-1;}  // index of x:    black,white are 1,2
+static inline int opt(int x) {return 3^x;} // opponent of x
 
 char emit(int value) ;       // EMP, BLK, WHT
 void emitString(int value) ; // empty, black, white

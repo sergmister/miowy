@@ -8,13 +8,15 @@
 #include "node.h"
 #include "vec.h"
 
+int mymin(int x, int y) { return (x<y) ? x : y ; }
+
 void topKLcns(int topKL[], int& k, int val[]) { // lcns of top k vals, sorted by val[]
   int local[TotalGBCells]; int dummy; copyvec(val, TotalGBCells, local, dummy);
   int j;
   for (j = 0; j<k; j++) {
     int x = index_of_max(local, j, TotalGBCells);
     //printf("%d ",val[x]); 
-    if (local[x]==0) break; 
+    //if (local[x]==0) break; 
     swap(local[x], local[j]);
     topKL[j] = x;
   }
@@ -23,27 +25,37 @@ void topKLcns(int topKL[], int& k, int val[]) { // lcns of top k vals, sorted by
 
 ScoreLcn negIfNec(bool rtClr, ScoreLcn sl) {
   if (rtClr) return sl;
-  return ScoreLcn(MAXSCORE-sl.scr, sl.lcn);  // negate score
+  return ScoreLcn(negScr(sl.scr), sl.lcn);  // negate score
 }
 
 ScoreLcn ngmx_MCS (int r, Board& Bd, int s, bool rtClr, int d, int w, int alf, int bet, bool v) {
   bool uzM = true; bool acc = true; int Children[TotalCells]; int numCh;
   Board B = Bd; Playout pl(B); 
   ScoreLcn rootsl = flat_MCS(r, B, pl, s, uzM, acc, v);
-  if (d==0) {printf("d==0, returning"); return negIfNec(rtClr, rootsl); }
-  if (rootsl.scr==MAXSCORE) {printf("found win, returning"); return negIfNec(rtClr, rootsl); }
-  if (rootsl.scr==0) {printf("found loss, returning"); return negIfNec(rtClr, rootsl); }
-  if (pl.mpsz < pl.numAvail) {
-    copyvec(pl.MP, pl.mpsz, Children, numCh);
-  }
+  if (d==0||rootsl.scr==MAXSCORE||rootsl.scr==0) return negIfNec(rtClr, rootsl); 
+  assert(pl.mpsz>0);
+  if (pl.mpsz==1) { 
+    Children[0] = rootsl.lcn; numCh = 1;}
   else {
-    numCh = w;
-    topKLcns(Children, numCh, pl.AMAF[nx(s)]);
+    numCh = w; if (pl.mpsz<pl.numAvail) numCh = pl.mpsz;
+    printf("w %d pl.mpsz %d min %d\n",w, pl.mpsz, numCh);
+    topKLcns(Children, numCh, pl.AMAF[nx(s)]);  // flat_MCS erased non-mustplay values
   }
   printf("top %d moves: ",numCh);
   for (int j = 0; j<numCh; j++) { prtLcn(Children[j]); printf(" "); } printf("\n");
-  //int bstScr = -1;
-  return negIfNec(rtClr,rootsl);
+  ScoreLcn bstSL(-1, -1);
+  for (int j=0; j<numCh; j++) {
+    Board chB = B; 
+    int chMiai; int chbdst = BRDR_NIL; Move chMv(s,Children[j]); 
+    chMiai = chB.move(chMv, uzM, chbdst); chB.show();
+    ScoreLcn chSL = ngmx_MCS(r, chB, opt(s), !rtClr, d-1, w, negScr(bet), negScr(alf), v); 
+    chSL.scr = negScr(chSL.scr);
+    printf("tried move %c ",emit(opt(s))); prtLcn(chSL.lcn); printf(" %.2f\n",scrToFlt(chSL.scr));
+    if (chSL.scr > bstSL.scr) { bstSL.scr = chSL.scr; bstSL.lcn = Children[j]; }
+    alf = mymax(alf, chSL.scr);
+    if (alf >= bet) break;
+  }
+  return bstSL;
 }
 
 void prtPlayoutMsg(int sim, char c, int lcn, int moves) {
@@ -235,6 +247,10 @@ int wrate(int wins, int opt_wins, int sims, int maxSims) {
          //(double)opt_sum_lengths/(double)opt_wins- 
 	 //(double)sum_lengths/(double)wins;
 
+void erase(int& x) { // make negative, used to erase non-mustplay cell scores
+  if (x>0) x *=-1; else x--;
+}
+
 ScoreLcn goodMove(Playout& pl, int s, int sims, int maxSims, bool v) { ScoreLcn sl;
   if (pl.mpsz==0) {  if (v) printf("mustplay 0 after %d sims\n", sims); 
     sl.scr = 0; 
@@ -242,6 +258,7 @@ ScoreLcn goodMove(Playout& pl, int s, int sims, int maxSims, bool v) { ScoreLcn 
   }
   else if (pl.mpsz==1) { if (v) printf("mustplay 1 after %d sims\n", sims); 
     sl.scr = wrate(pl.wins[nx(s)], pl.wins[nx(opt(s))], sims, maxSims);
+    if (sl.scr==0) sl.scr = 1; // not a proven loss
     sl.lcn = pl.MP[0];
   }
   else { // pl.msz > 1, sims finished without solving
@@ -252,7 +269,7 @@ ScoreLcn goodMove(Playout& pl, int s, int sims, int maxSims, bool v) { ScoreLcn 
       for (int m=0; m<pl.mpsz; m++) inMP[pl.MP[m]] = true;
       for (int x = 0; x < N; x ++) for (int y=0; y< N-x; y++) {
         int psn = fatten(x,y);
-        if (!inMP[psn]) { pl.AMAF[nx(s)][psn] *=-1; pl.AMAF[nx(opt(s))][psn] *=-1; }
+        if (!inMP[psn]) { erase(pl.AMAF[nx(s)][psn]); erase(pl.AMAF[nx(opt(s))][psn]); }
       }
     }
     if (pl.wins[nx(s)]>0) {

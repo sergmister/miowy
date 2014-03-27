@@ -11,6 +11,8 @@ int index_of_max(int A[], int k, int n) { // index of max element in A[k..n-1]
   return x;
 }
 
+int mymax(int x, int y) { if (x>y) return x; return y; }
+
 int myMax(int A[], int n) {
   assert(n>=0);
   int x = A[0];
