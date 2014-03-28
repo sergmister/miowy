@@ -238,6 +238,7 @@ int sortMPLcn(int MP[], int MPsize, int s, int A[2][TotalGBCells]) { // sort by 
 }
 
 int wrate(int wins, int opt_wins, int sims, int maxSims) {
+  //if (sims<5) printf("wins %d opt_wins %d sims %d\n",wins,opt_wins,sims);
   assert(wins+opt_wins==sims);
   int wr = fltToScr(float(wins)/float(sims));
   if (sims < maxSims/10) // too few sims, smooth
@@ -258,13 +259,17 @@ ScoreLcn goodMove(Playout& pl, int s, int sims, int maxSims, bool v) { ScoreLcn 
   if (pl.mpsz==0) {  if (v) printf("mustplay 0 after %d sims\n", sims); 
     sl.scr = 0; 
     sl.lcn = pl.MP[0]; 
+    if (v) printInfo(pl, s, sims);
+    return sl;
   }
-  else if (pl.mpsz==1) { if (v) printf("mustplay 1 after %d sims\n", sims); 
+  if (pl.mpsz==1) { if (v) printf("mustplay 1 after %d sims\n", sims); 
     sl.scr = wrate(pl.wins[nx(s)], pl.wins[nx(opt(s))], sims, maxSims);
     if (sl.scr==0) sl.scr = 1; // not a proven loss
     sl.lcn = pl.MP[0];
+    if (v) printInfo(pl, s, sims);
+    return sl;
   }
-  else { // pl.msz > 1, sims finished without solving
+  // pl.msz > 1, sims finished without solving
     assert(sims == maxSims);
     if (pl.mpsz < pl.numAvail) { // nontrivial mustplay, zero out other scores
       bool inMP[TotalGBCells];
@@ -284,7 +289,6 @@ ScoreLcn goodMove(Playout& pl, int s, int sims, int maxSims, bool v) { ScoreLcn 
       sl.scr = 1; // not a proven loss yet...
       sl.lcn = index_of_max(pl.AMAF[nx(opt(s))], 0, TotalGBCells);
     }
-  }
   if (v) printInfo(pl, s, sims);
   return sl;
 }
@@ -306,7 +310,7 @@ ScoreLcn flat_MCS(int& r, Board& B, Playout& pl, int s, bool uzMi, bool acc, boo
     //if ((j<2)&&(v))  prtPlayoutMsg(j,emit(turn),pl.Avail[just_won],just_won); // data for user
     updateInfo(pl, turn, just_won);
     if ((just_won==1)&&(!uzMi)) { // found mp singleton, update pl and return
-      pl.mpsz = 1; r = j+1; return goodMove(pl, s, r, maxr, v);
+      if (v) printf("mp singleton\n"); pl.mpsz = 1; pl.MP[0]=pl.Avail[just_won]; r = j+1; return goodMove(pl, s, r, maxr, v);
     }
     if (just_won == 1) { // using miai, threat detected
       if (!threat) { // first threat
