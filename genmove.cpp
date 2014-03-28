@@ -28,18 +28,21 @@ ScoreLcn negIfNec(bool rtClr, ScoreLcn sl) {
   return ScoreLcn(negScr(sl.scr), sl.lcn);  // negate score
 }
 
-ScoreLcn ngmx_MCS (int r, Board& Bd, int s, bool rtClr, int d, int w, int alf, int bet, bool v) {
+ScoreLcn ngmx_MCS (int r, Board& Bd, int s, bool rtClr,
+                   int d, int w, int alf, int bet, bool v) {
   bool uzM = true; bool acc = true; int Children[TotalCells]; int numCh;
   Board B = Bd; Playout pl(B); 
+
   ScoreLcn rootsl = flat_MCS(r, B, pl, s, uzM, acc, v);
-  if (d==0||rootsl.scr==MAXSCORE||rootsl.scr==0) return negIfNec(rtClr, rootsl); 
+  if (d==0||rootsl.scr==MAXSCORE||rootsl.scr==0) 
+    return negIfNec(rtClr, rootsl); 
   assert(pl.mpsz>0);
   if (pl.mpsz==1) { 
     Children[0] = rootsl.lcn; numCh = 1;}
   else {
     numCh = w; if (pl.mpsz<pl.numAvail) numCh = pl.mpsz;
     printf("w %d pl.mpsz %d min %d\n",w, pl.mpsz, numCh);
-    topKLcns(Children, numCh, pl.AMAF[nx(s)]);  // flat_MCS erased non-mustplay values
+    topKLcns(Children, numCh, pl.AMAF[nx(s)]);  // flat_MCS erased non-mp vals
   }
   printf("top %d moves: ",numCh);
   for (int j = 0; j<numCh; j++) { prtLcn(Children[j]); printf(" "); } printf("\n");

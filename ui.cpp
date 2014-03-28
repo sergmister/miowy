@@ -5,7 +5,7 @@
 
 static const char THISMOVE_CH    = '!';  // used for specified moves
 
-void displayHelp() {
+void prtHelp() {
   printf("\033[2J\033[1;1H");  // clear screen and reset cursor
   printf(" play Y     (2012-3 RBH + JP + BA + JH)\n\n");  
   printf("   %c a3           (black a3)\n",BLK_CH);

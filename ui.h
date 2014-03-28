@@ -9,7 +9,7 @@ static const char UNDO_CH = 'u';
 static const char QUIT_CH = '\n';
 static const char UNUSED_CH = '!';
 
-void displayHelp() ;
+void prtHelp() ;
 void welcome() ;
 void help() ;
 void interact() ;

@@ -36,7 +36,7 @@ static const int EMP = 0; // empty cell
 static const int BLK = 1; // black "
 static const int WHT = 2; // white "
 static const int GRD = 3; // guard "
-static const int TMP = 4;
+static const int TMP = 4; // unitialized: none of the above
 
 static const char EMP_CH = '.';
 static const char BLK_CH = 'b';
@@ -65,11 +65,15 @@ static inline bool near_edge(int lcn) {
 
 static inline bool has_win(int bd_set) { return bd_set==BRDR_ALL ; }
 
-struct Board {
-  int board[TotalGBCells];
-  int p    [TotalGBCells];
-  int brdr [TotalGBCells];
-  int reply[2][TotalGBCells];  // miai reply
+struct Board {                 // for each cell ...
+  int board[TotalGBCells];     //   b, w, empty ?
+  int p    [TotalGBCells];     //   parents, for union-find cnnctvty
+  int brdr [TotalGBCells];     //   brdrs cnnctd to ?
+  int reply[2][TotalGBCells];  //   miai reply ? (if any)
+  //int hist[TotalCells];        //   lcns   of all moves (permutation of lcns) 
+  //int clr[TotalCells];         //   colors of all moves 
+  //int numMvs;                  //   number of moves made so far.. with Moves, gives history
+
   void init();
   void zero_connectivity(int s, bool removeStone = true);
   void set_miai    (int s, int m1, int m2);

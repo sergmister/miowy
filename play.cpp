@@ -5,8 +5,8 @@
 #include "connect.h"
 #include "interact.h"
 
-int main(void) {Board myB; 
-  //myB.showBr();display_nearedges();
+int main(void) {
+  Board myB;     //myB.showBr();display_nearedges();
   interact(myB);
   return 0;
 }
