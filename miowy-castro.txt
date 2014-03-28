@@ -1,0 +1,5 @@
+game 1: miowy-castro 1-0
+1.w[a5] 2.b[d5] 3.w[d3] 4.b[c5] 5.w[e4] 6.b[c4] 7.w[c3] 8.b[b4] 9.w[b3] 10.b[a4] 11.w[a3] 12.b[f5] 13.w[g3] 14.b[f3] 15.w[f4] 16.b[b6] 17.w[c1]
+
+game 2: castro-miowy 0-1
+1.w[b5] 2.b[d4] 3.w[c3] 4.b[c6] 5.w[e5] 6.b[e2] 7.w[c7] 8.b[b7] 9.w[f3] 10.b[d6] 11.w[e1] 12.b[f1] 13.w[g2] 14.b[c5] 15.w[a10] 16.b[e3]
