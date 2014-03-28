@@ -133,7 +133,7 @@ void interact(Board& B) { bool uzMi = true; bool acc = true;
             sl = flat_MCS(r, B, pl, st, uzMi, acc, v);
             //sl = ngmx_MCS(r, B, st, true, 2, 3, -1, MAXSCORE+1, v);
             if (pl.mpsz == 0) // mustplay 0, search without miai
-              { Playout pq(B); sl = flat_MCS(r, B, pq, st, false, acc, v); }
+              { r = ROLLOUTS; Playout pq(B); sl = flat_MCS(r, B, pq, st, false, acc, v); }
             lcn = sl.lcn;
           }
           //lcn = uct_move   (ROLLOUTS, B, st, uzMi);  // needs debugging

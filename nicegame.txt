@@ -20,27 +20,4 @@
 
 1.w[b5] 2.b[e4] 3.w[d3] 4.b[c4] 5.w[d4] 6.b[d5] 7.w[c5] 8.b[c6] 9.w[f2] 10.b[g2] 11.w[f3] 12.b[g4] 13.w[f4] 14.b[f5] 15.w[g3] 16.b[h3] 17.w[e5] 18.b[e6] 19.w[d6] 20.b[d7] 21.w[c7] 22.b[c8] 23.w[b8] 24.b[b9]
 
-w b5\r
-b e4\r
-w d3
-b c4
-w d4
-b d5
-w c5
-b c6
-w f2
-b g2
-w f3
-b g4
-w f4
-b f5
-w g3
-b h3
-w e5
-b e6
-w d6
-b d7
-w c7
-b c8
-w b8
-b b9\r
+1.w[d2] 2.b[d4] 3.w[c4] 4.b[c5] 5.w[b5] 6.b[b6] 7.w[e2] 8.b[f3] 9.w[g2] 10.b[f2] 11.w[f1] 12.b[g1]
