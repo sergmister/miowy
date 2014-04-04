@@ -1,3 +1,5 @@
+- in middle of fixing feature: winning miai not always picked
+
 - negamax: 
    - needs history, so that oppnt board connectivity can be updated after player's last move
    - needs a better state score function

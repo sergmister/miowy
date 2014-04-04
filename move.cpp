@@ -5,17 +5,24 @@
 #include "move.h"
 #include "shuff.h"
 
+int numSetBits(int n) { 
+    int count = 0;
+    while (n) { n &= (n-1) ; count++; }
+    return count;
+}
+
 int   fltToScr(float x) {return int(x*MAXSCORE); }
 float scrToFlt(int x)   {return float(x)/float(MAXSCORE); } 
 
 void prtMove(Move m) {
   printf("%c",emit(m.s)); printf("["); prtLcn(m.lcn); printf("]"); }
 
-const int Nbr_offsets[NumNbrs+1]
-  = {-Np2G, 1-Np2G, 1, Np2G, Np2G-1, -1,-Np2G};
-const int Bridge_offsets[NumNbrs]
+const int Nbr_offsets[NumNbrs+2] // wraparound, avoid mod, can always access [x+2]
+  = {-Np2G, 1-Np2G, 1, Np2G, Np2G-1, -1,-Np2G, 1-Np2G};
+const int Bridge_offsets[NumNbrs+2] // wraparound, avoid mod, can always access [x+2]
   = {-2*Np2G+1, 2-Np2G,   Np2G+1,
-      2*Np2G-1, Np2G-2, -(Np2G+1)};
+      2*Np2G-1, Np2G-2, -(Np2G+1),
+     -2*Np2G+1, 2-Np2G };
 
 void show_winners(struct Board B, int st, bool useMiai) { 
   int MP[TotalCells]; int MPsize;
@@ -96,7 +103,7 @@ int Board::moveMiaiPart(Move mv, bool useMiai, int& bdset, int cpt) {
     release_miai(Move(opt(s),lcn));
   }
   // avoid directional bridge bias: search in random order
-  int x, perm[NumNbrs] = {0, 1, 2, 3, 4, 5}; 
+  int x, perm[NumNbrs] = {1, 2, 3, 4, 5, 6}; 
   shuffle_interval(perm,0,NumNbrs-1); 
   for (int t=0; t<NumNbrs; t++) {  // look for miai nbrs
     // in this order 1) connecting to a stone  2) connecting to a side
@@ -110,6 +117,7 @@ int Board::moveMiaiPart(Move mv, bool useMiai, int& bdset, int cpt) {
          //   * -         becomes  * m
          //  m m *                - m *
          // g g g g              g g g g     <-  border guards 
+    // rearrange this: 4 cases: both before/after miais possible, only after, only before, none of above
     if (board[nbr] == s &&
         board[c1] == EMP &&
         board[c2] == EMP &&
@@ -122,12 +130,29 @@ int Board::moveMiaiPart(Move mv, bool useMiai, int& bdset, int cpt) {
             if (near_edge(c2) && (near_edge(lcn) || near_edge(nbr)))
               YborderRealign(Move(s,nbr),cpt,c2,reply[nx(s)][c2],c1);
          }
-         else if (Find(p,nbr)!=Find(p,cpt)) {  // new miai
-           nbrRoot = Find(p,nbr);
-           brdr[nbrRoot] |= brdr[cpt];
-           cpt = Union(p,cpt,nbrRoot); 
-           set_miai(s,c1,c2);
+         else if (Find(p,nbr)!=Find(p,cpt)) {  // new miai candidate
+           nbrRoot = Find(p,nbr); int b  = brdr[nbrRoot]  | brdr[cpt];
+           int nbr0 = lcn+Bridge_offsets[x-1]; int c0 = lcn + Nbr_offsets[x-1];
+           if ((board[nbr0]==s) && (board[c0]==EMP) && (Find(p,nbr0)!=Find(p,cpt))) {
+             // nbr0 also new miai candidate, which is better?
+             int nbrRoot0 = Find(p,nbr0);
+             int b0 = brdr[nbrRoot0] | brdr[cpt];
+             if (numSetBits(b0) > numSetBits(b)) { c2 = c0; nbrRoot = nbrRoot0; }
            } 
+           int nbr2 = lcn+Bridge_offsets[x+1]; int c3 = lcn + Nbr_offsets[x+2];
+           if ((board[nbr2]==s) && (board[c3]==EMP) && (Find(p,nbr2)!=Find(p,cpt))) {
+             int nbrRoot2 = Find(p,nbr2);
+             int b2 = brdr[nbrRoot2] | brdr[cpt];
+             int b  = brdr[nbrRoot]  | brdr[cpt];
+             if (numSetBits(b2) > numSetBits(b)) { c1 = c3; nbrRoot = nbrRoot2; }
+
+
+
+             brdr[nbrRoot] |= brdr[cpt];
+             cpt = Union(p,cpt,nbrRoot); 
+             set_miai(s,c1,c2);
+             } 
+           }
          }
     else if ((board[nbr] == GRD) &&
              (board[c1]  == EMP) &&
