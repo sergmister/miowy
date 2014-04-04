@@ -157,7 +157,8 @@ int Board::num(int kind) { int count = 0;
   return count; }
 
 void prMiai(int p, int r) {
-  if (p!=r) printf(" %3d", p);
+  //if (p!=r) printf(" %3d", p);
+  if (p!=r) { printf("  "); prtLcn(p); }
   else      printf("   *");
 }
   

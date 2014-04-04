@@ -10,6 +10,14 @@
 
 int mymin(int x, int y) { return (x<y) ? x : y ; }
 
+int Playout::eval(int st, int maxSims) { int p = nx(st);
+  int sims = wins[0]+wins[1]; assert(sims > 0);
+  int wr = fltToScr(float(wins[p])/float(sims));
+  if (sims < maxSims/10) // too few sims, smooth
+    return fltToScr(0.5*(1.0 + scrToFlt(wr)));
+  return wr;
+}
+
 void topKLcns(int topKL[], int& k, int val[]) { // lcns of top k vals, sorted by val[]
   int local[TotalGBCells]; int dummy; copyvec(val, TotalGBCells, local, dummy);
   int j;
@@ -148,12 +156,15 @@ void printInfo(Playout& pl, int s, int r) {
   int owins  = pl.wins[nx(opt(s))];
   int mysum = pl.win_length[nx(s)];
   int osum = pl.win_length[nx(opt(s))];
-  printf("%c wins %.2f after %d sims ", emit(s), float(mywins)/float(r), r);
-  printf("len %2.2f (oppt %2.2f) minlen b %d w %d\n\n",
-    ratio(mysum,mywins), ratio(osum,owins), pl.minwinlen[0], pl.minwinlen[1]);
+
+  double mylen = ratio(mysum,mywins);
+  double olen = ratio(osum,owins);
   //showYcore(pl.wins); 
   showBothYcore(pl.cellWins[nx(s)],pl.cellWins[nx(opt(s))]);
   showBothYcore(pl.AMAF[nx(s)],pl.AMAF[nx(opt(s))]);
+  printf("sims %d  %c wins %.2f eval.len %.2f ", r, emit(s), float(mywins)/float(r), (0.5+olen)/(mylen+olen));
+  printf("len %2.2f (opt %2.2f) minlen %d (%d)\n\n",
+    ratio(mysum,mywins), ratio(osum,owins), pl.minwinlen[nx(s)], pl.minwinlen[nx(opt(s))]);
 }
 
 int indexOf(int x, int A[], int n) { int j; // return index of x in A[0]...A[n-1]
@@ -182,6 +193,7 @@ void set_MP(Board& B, Playout& pl, int s, bool useMiai, bool vrbs) {
     for (int c=0; c<N-r; c++) {
       int lcn = fatten(r,c);
       Move mv(s,lcn);
+      if (lcn==fatten(1,5)) { prtLcn(lcn); printf("\n"); B.showAll(); }
       if ((B.board[lcn]==EMP)&&(is_win(B,mv,useMiai,M,Msz,vrbs))) { // new threat
         T[threats++] = lcn;
         if (threats==1) {// first threat, MP <- carrier
@@ -245,6 +257,7 @@ int wrate(int wins, int opt_wins, int sims, int maxSims) {
     return fltToScr(0.5*(1.0 + scrToFlt(wr))); 
   return wr;
 }
+
 // TODO: more sophisticated ? maybe use length?
 //double score(int wins, int opt_wins, int sum_lengths, int opt_sum_lengths) {
   //return -.5 + (double)wins/(double)ROLLOUTS+ //monte carlo win prob
@@ -256,6 +269,7 @@ void erase(int& x) { // make negative, used to erase non-mustplay cell scores
 }
 
 ScoreLcn goodMove(Playout& pl, int s, int sims, int maxSims, bool v) { ScoreLcn sl;
+  assert(sims==pl.wins[0]+pl.wins[1]);
   if (pl.mpsz==0) {  if (v) printf("mustplay 0 after %d sims\n", sims); 
     sl.scr = 0; 
     sl.lcn = pl.MP[0]; 
@@ -263,7 +277,8 @@ ScoreLcn goodMove(Playout& pl, int s, int sims, int maxSims, bool v) { ScoreLcn 
     return sl;
   }
   if (pl.mpsz==1) { if (v) printf("mustplay 1 after %d sims\n", sims); 
-    sl.scr = wrate(pl.wins[nx(s)], pl.wins[nx(opt(s))], sims, maxSims);
+    //sl.scr = wrate(pl.wins[nx(s)], pl.wins[nx(opt(s))], sims, maxSims);
+    sl.scr = pl.eval(s, maxSims);
     if (sl.scr==0) sl.scr = 1; // not a proven loss
     sl.lcn = pl.MP[0];
     if (v) printInfo(pl, s, sims);
@@ -281,7 +296,8 @@ ScoreLcn goodMove(Playout& pl, int s, int sims, int maxSims, bool v) { ScoreLcn 
       }
     }
     if (pl.wins[nx(s)]>0) {
-      sl.scr = wrate(pl.wins[nx(s)], pl.wins[nx(opt(s))], sims, maxSims);
+      //sl.scr = wrate(pl.wins[nx(s)], pl.wins[nx(opt(s))], sims, maxSims);
+      sl.scr = pl.eval(s, maxSims);
       sl.lcn = index_of_max(pl.AMAF[nx(s)], 0, TotalGBCells); 
     } 
     else {
@@ -296,8 +312,8 @@ ScoreLcn goodMove(Playout& pl, int s, int sims, int maxSims, bool v) { ScoreLcn 
 ScoreLcn flat_MCS(int& r, Board& B, Playout& pl, int s, bool uzMi, bool acc, bool v) {  // mustplay left at front of Avail
   // accelerate? winners   sublist A[0             .. end_winners]
   //             remainder sublist A[end_winners+1 ..  TotalCells]
-  int maxr = r; // kick out early if win/loss
-  bool threat = false;  //bool threat2 = false;
+  int maxr = r; // if win/loss found, kick out early, then r < maxr
+  bool threat = false;  
   assert(pl.numAvail!=0);
   int end_winners = -1; int just_won = -1;
   //for (int j=0; j<1; j++) shuffle_interval(pl.Avail,0,pl.numAvail-1);

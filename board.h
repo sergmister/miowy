@@ -2,7 +2,7 @@
 #define BOARDY_H
 #include "move.h"
 
-static const int N = 10;
+static const int N = 8;
 static const int INFNTY =     999999999;
 static const int MAXSCORE =   99999999;
 static inline int negScr(int s) {return MAXSCORE-(s);}  
@@ -95,12 +95,12 @@ struct Board {                 // for each cell ...
   Board(); // constructor
 } ;
 
-struct Playout {
+struct Playout { // aggregate data, over all playouts for a fixed position...
   int Avail[TotalCells];  // locations of available cells
   int numAvail;           // number of available cells
   int MP[TotalCells];     // locations of mustplay cells
   int mpsz;               // mustplay size
-  int wins[2]; // black, white
+  int wins[2];            // black, white
   int cellWins[2][TotalGBCells];
   int AMAF[2][TotalGBCells];
   int minwinlen[2];
@@ -109,6 +109,7 @@ struct Playout {
 
   void single_playout(int& turn, int& moves_to_winner, bool useMiai); //
   void listLive(int num);  // cell is live if winning move in some simulation
+  int eval(int st, int maxSims);    // use data, return score for player st
   Board& B;
 } ;
 

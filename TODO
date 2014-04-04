@@ -1,4 +1,7 @@
-- negamax: needs history, so that oppnt board connectivity can be updated after player's last move
+- negamax: 
+   - needs history, so that oppnt board connectivity can be updated after player's last move
+   - needs a better state score function
+       - win ratio not enough,  need to incorporate length, maybe relative averages of ? shortest win lengths
 
 - add 432 and 321 miai to side (then true mustplay reasoning)
 - boolean sets for mustplay

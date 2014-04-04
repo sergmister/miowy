@@ -41,6 +41,7 @@ bool is_win(struct Board& B, Move mv, bool useMiai, int C[], int& csize, bool vr
   int bd_set = BRDR_NIL;
   Board local = B;
   local.move(mv, useMiai, bd_set);
+  if (mv.lcn==fatten(1,5)) { printf("in is_win\n"); local.showAll(); }
   if (useMiai && has_win(bd_set)) { // leave carrier of winmove in C[]
     C[0] = mv.lcn; csize = 1;
     for (int q = 0; q < NumNbrs; q++) {
@@ -89,7 +90,8 @@ int Board::moveMiaiPart(Move mv, bool useMiai, int& bdset, int cpt) {
   int nbr,nbrRoot; int lcn = mv.lcn; int s = mv.s;
   release_miai(mv); // your own miai, so connectivity ok
   int miReply = reply[nx(opt(s))][lcn];
-  if (miReply != lcn) {
+  if (miReply != lcn) { // playing into opponent miai... which will be released
+    // WARNING: if opp'ts next move is not to the miai response, conn'ty needs to be recomputed
     //prtLcn(lcn); printf(" released opponent miai\n"); 
     release_miai(Move(opt(s),lcn));
   }
@@ -100,8 +102,8 @@ int Board::moveMiaiPart(Move mv, bool useMiai, int& bdset, int cpt) {
     // in this order 1) connecting to a stone  2) connecting to a side
     x = perm[t]; assert((x>=0)&&(x<NumNbrs));
     nbr = lcn + Bridge_offsets[x]; // nbr via bridge
-    int c1 = lcn+Nbr_offsets[x];     // carrier 
-    int c2 = lcn+Nbr_offsets[x+1];   // other carrier
+    int c1 = lcn+Nbr_offsets[x];     // miai carrier 
+    int c2 = lcn+Nbr_offsets[x+1];   // other miai carrier
     Move mv1(s,c1); 
     Move mv2(s,c2); 
          // y border realign: move the miai so stones are connected *and* adjacent to border
