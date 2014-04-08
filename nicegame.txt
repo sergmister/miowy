@@ -26,3 +26,16 @@
 1.w[b5] 2.b[e4] 3.w[c3] 4.b[c6] 5.w[d5] 6.b[c5] 7.w[d4] 8.b[c4] 9.w[d3] 10.b[d6] 11.w[e5] 12.b[b3] 13.w[b4] 14.b[c2] 15.w[e1]
 
 1.w[a4] 2.b[c3] 3.w[b5] 4.b[b2] 5.w[d3] 6.b[c4] 7.w[d5] 8.b[c5] 9.w[c6] 10.b[d4] 11.w[e4] 12.b[b6] 13.w[b7]
+
+// miowy-bradley 1-0, tourney 2
+1.w[e6] 2.b[d4] 3.w[e4] 4.b[c6] 5.w[e3] 6.b[e5] 7.w[d3] 8.b[d5] 9.w[f4] 10.b[c4] 11.w[c3] 12.b[b4] 13.w[b2] 14.b[b3] 15.w[c2] 16.b[a3]
+17.w[a1] 18.b[b1] 19.w[a2] 20.b[g4] 21.w[f5]
+
+// brad-mio 1-0, tourney 2 :( ... should have abandoned the earlier miai...
+// weak 4.w[f2], prefer f3
+// weak 6.w[e4], prefer f4  ... maybe negamax fixes this?  ... maybe the defensive blocking pattern?
+1.b[c2] 2.w[d4] 3.b[e1] 4.w[f2] 5.b[e3] 6.w[e4] 7.b[f3] 8.w[e2] 9.b[d3] 10.w[c3] 11.b[d2] 12.w[f4] 13.b[g3] 14.w[b3] 15.b[c4] 16.w[b2]
+17.b[b5]
+
+
+

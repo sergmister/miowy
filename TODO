@@ -1,3 +1,6 @@
+- remembering miai from previous board states is perhaps a flaw, esp after
+  an oppt move ... better to select best miai on the fly ... but how?
+
 - now that mustplay updates are in Playout, don't actually need refine_MP, probably more elegant though
 
 - miai are picked randomly among (up to) 6 possible nbr possibilities...
