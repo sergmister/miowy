@@ -24,7 +24,8 @@ extern int   fltToScr(float x) ;
 extern float scrToFlt(int x) ; 
 
 extern void prtMove(Move m) ;
+extern void getCarrier(struct Board& B, Move mv, int C[], int& csize) ;
 
-bool is_win(struct Board& B, Move mv, bool useMiai, int C[], int& csize, bool vrbs);
-void show_winners(struct Board B, int st, bool useMiai);
+bool is_win(struct Board& B, Move mv, bool useMiai, int C[], int& csize, bool vrbs) ;
+void show_winners(struct Board B, int st, bool useMiai) ;
 #endif

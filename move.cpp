@@ -42,21 +42,24 @@ void show_winners(struct Board B, int st, bool useMiai) {
   printf("\n");
 }
 
+void getCarrier(struct Board& B, Move mv, int C[], int& csize) {
+  C[0] = mv.lcn; csize = 1;
+  for (int q = 0; q < NumNbrs; q++) {
+    int xLcn = mv.lcn+Nbr_offsets[q];
+    Move mx(mv.s,xLcn);
+    if ((B.board[xLcn]==EMP)&&(!B.not_in_miai(mx)))
+     C[csize++] = xLcn;
+  }
+}
+
 bool is_win(struct Board& B, Move mv, bool useMiai, int C[], int& csize, bool vrbs) { 
 // if winmove, carrier is cell plus any nbring self-miai
   assert(B.board[mv.lcn]==EMP);
   int bd_set = BRDR_NIL;
   Board local = B;
   local.move(mv, useMiai, bd_set);
-  if (mv.lcn==fatten(1,5)) { printf("in is_win\n"); local.showAll(); }
   if (useMiai && has_win(bd_set)) { // leave carrier of winmove in C[]
-    C[0] = mv.lcn; csize = 1;
-    for (int q = 0; q < NumNbrs; q++) {
-      int xLcn = mv.lcn+Nbr_offsets[q];
-      Move mx(mv.s,xLcn);
-      if ((local.board[xLcn]==EMP)&&(!local.not_in_miai(mx)))
-        C[csize++] = xLcn;
-    }
+    getCarrier(local, mv, C, csize);
     if (vrbs) {prtLcn(C[0]); printf(" wins carrier size %d\n",csize); }
   }
   return has_win(bd_set);
@@ -103,7 +106,7 @@ int Board::moveMiaiPart(Move mv, bool useMiai, int& bdset, int cpt) {
     release_miai(Move(opt(s),lcn));
   }
   // avoid directional bridge bias: search in random order
-  int x, perm[NumNbrs] = {1, 2, 3, 4, 5, 6}; 
+  int x, perm[NumNbrs] = {0, 1, 2, 3, 4, 5}; 
   shuffle_interval(perm,0,NumNbrs-1); 
   for (int t=0; t<NumNbrs; t++) {  // look for miai nbrs
     // in this order 1) connecting to a stone  2) connecting to a side
@@ -131,28 +134,25 @@ int Board::moveMiaiPart(Move mv, bool useMiai, int& bdset, int cpt) {
               YborderRealign(Move(s,nbr),cpt,c2,reply[nx(s)][c2],c1);
          }
          else if (Find(p,nbr)!=Find(p,cpt)) {  // new miai candidate
-           nbrRoot = Find(p,nbr); int b  = brdr[nbrRoot]  | brdr[cpt];
-           int nbr0 = lcn+Bridge_offsets[x-1]; int c0 = lcn + Nbr_offsets[x-1];
-           if ((board[nbr0]==s) && (board[c0]==EMP) && (Find(p,nbr0)!=Find(p,cpt))) {
-             // nbr0 also new miai candidate, which is better?
-             int nbrRoot0 = Find(p,nbr0);
-             int b0 = brdr[nbrRoot0] | brdr[cpt];
-             if (numSetBits(b0) > numSetBits(b)) { c2 = c0; nbrRoot = nbrRoot0; }
-           } 
-           int nbr2 = lcn+Bridge_offsets[x+1]; int c3 = lcn + Nbr_offsets[x+2];
-           if ((board[nbr2]==s) && (board[c3]==EMP) && (Find(p,nbr2)!=Find(p,cpt))) {
-             int nbrRoot2 = Find(p,nbr2);
-             int b2 = brdr[nbrRoot2] | brdr[cpt];
-             int b  = brdr[nbrRoot]  | brdr[cpt];
-             if (numSetBits(b2) > numSetBits(b)) { c1 = c3; nbrRoot = nbrRoot2; }
-
-
-
+           //nbrRoot = Find(p,nbr); //int b  = brdr[nbrRoot]  | brdr[cpt];
+           //int nbr0 = lcn+Bridge_offsets[x-1]; int c0 = lcn + Nbr_offsets[x-1];
+           //if ((board[nbr0]==s) && (board[c0]==EMP) && (Find(p,nbr0)!=Find(p,cpt))) {
+             //// nbr0 also new miai candidate, which is better?
+             //int nbrRoot0 = Find(p,nbr0);
+             //int b0 = brdr[nbrRoot0] | brdr[cpt];
+             //if (numSetBits(b0) > numSetBits(b)) { c2 = c0; nbrRoot = nbrRoot0; }
+           //} 
+           //int nbr2 = lcn+Bridge_offsets[x+1]; int c3 = lcn + Nbr_offsets[x+2];
+           //if ((board[nbr2]==s) && (board[c3]==EMP) && (Find(p,nbr2)!=Find(p,cpt))) {
+             //int nbrRoot2 = Find(p,nbr2);
+             //int b2 = brdr[nbrRoot2] | brdr[cpt];
+             //int b  = brdr[nbrRoot]  | brdr[cpt];
+             //if (numSetBits(b2) > numSetBits(b)) { c1 = c3; nbrRoot = nbrRoot2; }
+             nbrRoot = Find(p,nbr); //int b  = brdr[nbrRoot]  | brdr[cpt];
              brdr[nbrRoot] |= brdr[cpt];
              cpt = Union(p,cpt,nbrRoot); 
              set_miai(s,c1,c2);
              } 
-           }
          }
     else if ((board[nbr] == GRD) &&
              (board[c1]  == EMP) &&
@@ -172,6 +172,10 @@ int Board::move(Move mv, bool useMiai, int& bdset) { //bdset comp. from scratch
 // WARNING  opt(mv.s) connectivity will be broken if mv.s hits opt miai
 //   useMiai ? miai adjacency : stone adjacency
 // return opponent miai reply of mv, will be mv.lcn if no miai
+// WARNING: there are 6 possible miai choices, each consecutive pair conflicts...
+//          right now, selection is made randomly... so might not always find
+//          winning choice .... might be better to
+//          pick a maximal set that maximizes new brdr connectivity
   int nbr,nbrRoot,cpt; int lcn = mv.lcn; int s = mv.s;
   assert(brdr[lcn]==BRDR_NIL);
   put_stone(mv);

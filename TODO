@@ -1,4 +1,10 @@
-- in middle of fixing feature: winning miai not always picked
+- miai are picked randomly among (up to) 6 possible nbr possibilities...
+  sometimes the best (ie. winning) miai is not picked ...
+  so maybe have a fast check in moveMiaPart which picks a winning miai combo if there is one
+  note: label miai possibilities 0-5, where consecutive miai share a carrier cell...
+  then the maximal miai sets are always subsets of 024, 135, 03, 14, 25,
+  so simple check is see if union of brdr values any of these (at most 5) subsets
+  yields all-sides, in which case we have a winner.
 
 - negamax: 
    - needs history, so that oppnt board connectivity can be updated after player's last move

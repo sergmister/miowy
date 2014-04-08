@@ -73,6 +73,13 @@ void prtPlayoutMsg(int sim, char c, int lcn, int moves) {
   printf("sim %d: %c wins ",sim,c); prtLcn(lcn); printf(" move %d\n",moves);
 }
 
+
+void prtMP(Playout& pl) {
+  printf("mustplay %d ",pl.mpsz); 
+  for (int j=0; j< pl.mpsz; j++) { prtLcn(pl.MP[j]); printf(" "); }
+  printf("\n");
+}
+
 void prtThrtMsg(int sim, char c, int lcn, int moves, int threatn) {
   printf("  threat %d: ",threatn); 
   prtPlayoutMsg(sim,c,lcn,moves);
@@ -180,33 +187,35 @@ void addtoFrontSublist(int x, int A[], int& sz, int n) {
     swap(A[j],A[++sz]);
 }
 
-void set_MP(Board& B, Playout& pl, int s, bool useMiai, bool vrbs) { 
+void refine_MP(Board& B, Playout& pl, Move killer, bool useMiai, bool vrbs) { 
 //   * try every possible move as a killer
 //   * if yes, its carrier is itself plus all immediate nbrs in miai
 //   * final mustplay is intersection of all such carriers
 //   * each move in final mustplay has no killer
-  int T[TotalCells]; int threats = 0; 
+//   * WARNING: using randomly selected miai, so might not find all killers
+//   * WARNING: mustplay initialized with killer's carrier ...
+  int T[TotalCells]; int threats = 1;  // ... threats start at 1
   int C[TotalCells]; int Csz; 
   int M[TotalCells]; int Msz;
-  if (vrbs) printf("\nsetting mustplay %c \n",emit(s));
+  if (vrbs) printf("\nrefine mustplay %c \n",emit(killer.s));
   for (int r=0; r<N; r++) { // check every possible move for win, if yes, refine MP
     for (int c=0; c<N-r; c++) {
-      int lcn = fatten(r,c);
-      Move mv(s,lcn);
-      if (lcn==fatten(1,5)) { prtLcn(lcn); printf("\n"); B.showAll(); }
-      if ((B.board[lcn]==EMP)&&(is_win(B,mv,useMiai,M,Msz,vrbs))) { // new threat
-        T[threats++] = lcn;
-        if (threats==1) {// first threat, MP <- carrier
-          copyvec(M, Msz, pl.MP, pl.mpsz);
-        }
-        else  { // not first threat
+      int newlcn = fatten(r,c);
+      if (newlcn != killer.lcn) {  // if equal, we already have the carrier...
+        Move mv(opt(killer.s),newlcn);
+        if ((B.board[newlcn]==EMP)&&(is_win(B,mv,useMiai,M,Msz,vrbs))) { // new threat
+          T[threats++] = newlcn;
           myintersect(M, Msz, pl.MP, pl.mpsz, C, Csz);
           copyvec(C, Csz, pl.MP, pl.mpsz);
         }
       }
     }
   }
-  if (vrbs) printf("%d threats, mustplay %d found\n",threats,pl.mpsz);
+  if (vrbs) {
+    printf("%d threats, mustplay %d found\n",threats,pl.mpsz);
+    for (int q = 0; q< pl.mpsz; q++) { prtLcn(pl.MP[q]); printf(" "); }
+    printf("\n");
+  }
   assert(threats>0);
 }
 
@@ -224,7 +233,9 @@ void myshuffle(Playout& pl, int& end_w, const int& j_w, const bool& acc) {
 
 void threatInit(Playout& pl, int& k) {  // cycle through mustplay as move[0]
   assert(pl.mpsz > 0);
-  assert((k >= 0)&&(k < pl.mpsz));
+  if ((k<0)||(k>=pl.mpsz)) printf("k %d  pl.mpsz %d\n", k, pl.mpsz);
+  assert(k >= 0);
+  if (k >= pl.mpsz) { printf("resetting MPndx\n"); k=0; }
   int ndx = indexOf(pl.MP[k], pl.Avail, TotalCells);
   swap(pl.Avail[0], pl.Avail[ndx]); // next mustplay element
   k++; if (k==pl.mpsz) k=0;         // increment k, cyclically
@@ -325,20 +336,22 @@ ScoreLcn flat_MCS(int& r, Board& B, Playout& pl, int s, bool uzMi, bool acc, boo
     pl.single_playout(turn, just_won, uzMi);
     //if ((j<2)&&(v))  prtPlayoutMsg(j,emit(turn),pl.Avail[just_won],just_won); // data for user
     updateInfo(pl, turn, just_won);
-    if ((just_won==1)&&(!uzMi)) { // found mp singleton, update pl and return
-      if (v) printf("mp singleton\n"); pl.mpsz = 1; pl.MP[0]=pl.Avail[just_won]; r = j+1; return goodMove(pl, s, r, maxr, v);
+    if ((just_won==1)&&(!uzMi)) { // killer is mp singleton
+      r = j+1; return goodMove(pl, s, r, maxr, v);
     }
     if (just_won == 1) { // using miai, threat detected
       if (!threat) { // first threat
         threat = true; 
-        if (v) prtThrtMsg(j,emit(turn),pl.Avail[1],just_won,1);
-        set_MP(B, pl, turn, uzMi, v); // set mustplay
-        if (pl.mpsz==0||pl.mpsz==1) { r = j+1; return goodMove(pl, s, r, maxr, v); }
-        //  pl.mpsz > 1 ... insert MP into winners sublist at front of Avail
-        for (int q=0; q < pl.mpsz; q++) { 
+        if (v) prtThrtMsg(j,emit(turn),pl.Avail[just_won],just_won,1);
+        Move killer(opt(turn), pl.Avail[just_won]);
+        refine_MP(B, pl, killer, uzMi, v);     // refine     mustplay
+        if (v) {printf("sim %d carrier size %d\n",j, pl.mpsz); B.showAll();}
+        //  ... insert MP into winners sublist at front of Avail
+        for (int q=0; q < pl.mpsz; q++) 
           addtoFrontSublist(pl.MP[q], pl.Avail, end_winners, TotalCells);
-        }
       }
+      if ((v)&&(j<50)) { printf("sim %d ",j); prtMP(pl); }
+      if (pl.mpsz==0||pl.mpsz==1) { r = j+1; return goodMove(pl, s, r, maxr, v); }
     }
     if (just_won == 0) { // found win
       r = j+1;

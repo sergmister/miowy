@@ -43,7 +43,7 @@ void myintersect(int A[], int a, int B[], int b, int C[], int& c) {
   for (int x=0; x<a; x++)
     for (int y=0; y<b; y++)
       if (A[x]==B[y]) C[c++] = A[x];
-  // works only if sorted :(
+  //below works only if sorted :(
   //int x=0; int y=0; 
   //for (c=0; (x<a) && (y<b); ) {
     //if (A[x]<B[y]) x++;

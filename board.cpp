@@ -119,7 +119,28 @@ void Playout::single_playout(int& trn, int& k, bool useMiai) {
     }
     turn = opt(turn);
   } while (!has_win(bd_set)) ; 
-  if (k==0) {prtLcn(Avail[0]); printf(" wins on 1st move of playout\n"); L.showAll();}
+  //if (k==0) {prtLcn(Avail[0]); printf(" wins on 1st move of playout\n"); L.showAll();}
+  if (k==1) {
+    if (!useMiai) {
+      //if (v) { prtLcn(Avail[1]); printf(" is killer, so mp singleton\n"); }
+      mpsz = 1; MP[0] = Avail[1]; 
+    }
+    else { // get killer+carrier and update mustplay
+      Move killer(opt(turn), Avail[1]);
+      int oldmpsz = mpsz; int oldMP[TotalCells]; 
+      int newmpsz;        int newMP[TotalCells];
+      if (oldmpsz == numAvail) { // first non-trivial mustplay
+        getCarrier(L, killer, MP, mpsz);
+        copyvec(MP, mpsz, oldMP, oldmpsz);
+      }
+      else {                   // exists previous mustplay
+        copyvec(MP, mpsz, oldMP, oldmpsz);
+        getCarrier(L, killer, MP, mpsz);
+        myintersect(oldMP, oldmpsz, MP, mpsz, newMP, newmpsz);
+        copyvec(newMP, newmpsz, MP, mpsz);
+      }
+    }
+  }
   trn = opt(turn);
 }
 
