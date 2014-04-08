@@ -2,7 +2,7 @@
 #define GENMOVE_H
 #include "board.h"
 
-static const int ROLLOUTS = 50000;  // about 30 000 rollouts/sec on base10 board
+static const int ROLLOUTS = 100000;  // about 30 000 rollouts/sec on base10 board
 static const int WDTH = 10;  // negamax search width
 
 int      rand_move     (Board&) ;
