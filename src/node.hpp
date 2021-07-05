@@ -1,5 +1,4 @@
-#ifndef NODE_H
-#define NODE_H
+#pragma once
 #include <cstddef>
 
 #include "board.h"
@@ -43,4 +42,3 @@ struct Child {
     Node node;
     int lcn;
 };
-#endif

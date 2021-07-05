@@ -1,5 +1,4 @@
-#ifndef MYRANDOM_H
-#define MYRANDOM_H
+#pragma once
 #include <cstdlib>
 
 void shuffle_interval(int X[], int a, int b);
@@ -14,4 +13,3 @@ inline void swap(T& x, T& y) {
     x = y;
     y = tmp;
 }
-#endif

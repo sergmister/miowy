@@ -1,5 +1,4 @@
-#ifndef CONNECT_H
-#define CONNECT_H
+#pragma once
 #include "board.h"
 
 //   win iff some stone-group touches all 3 borders so ...
@@ -7,4 +6,3 @@
 
 int Find(int Parents[TotalGBCells], int x);
 int Union(int Parents[TotalGBCells], int x, int y);
-#endif

@@ -1,5 +1,4 @@
-#ifndef UI_H
-#define UI_H
+#pragma once
 #include "board.h"
 
 // static const char HELP_CH = '?';
@@ -14,4 +13,3 @@ void welcome();
 void help();
 void interact();
 void getCommand(char& cmd, int& s, int& lcn);
-#endif

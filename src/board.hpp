@@ -1,5 +1,4 @@
-#ifndef BOARDY_H
-#define BOARDY_H
+#pragma once
 #include "move.h"
 
 static const int N = 10;
@@ -127,4 +126,3 @@ void shapeAs(int shape, int X[]);
 void showYcore(int X[]);               // simple version of Board.show
 void showBothYcore(int X[], int Y[]);  // two at a time
 void display_nearedges();
-#endif

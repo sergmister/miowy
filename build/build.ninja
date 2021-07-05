@@ -69,61 +69,61 @@ build cmake_object_order_depends_target_miowy: phony || CMakeFiles/miowy.dir
 
 build CMakeFiles/miowy.dir/src/board.cpp.o: CXX_COMPILER__miowy_Debug ../src/board.cpp || cmake_object_order_depends_target_miowy
   DEP_FILE = CMakeFiles/miowy.dir/src/board.cpp.o.d
-  FLAGS = -g -std=gnu++20
+  FLAGS = -g -std=gnu++11
   OBJECT_DIR = CMakeFiles/miowy.dir
   OBJECT_FILE_DIR = CMakeFiles/miowy.dir/src
 
 build CMakeFiles/miowy.dir/src/connect.cpp.o: CXX_COMPILER__miowy_Debug ../src/connect.cpp || cmake_object_order_depends_target_miowy
   DEP_FILE = CMakeFiles/miowy.dir/src/connect.cpp.o.d
-  FLAGS = -g -std=gnu++20
+  FLAGS = -g -std=gnu++11
   OBJECT_DIR = CMakeFiles/miowy.dir
   OBJECT_FILE_DIR = CMakeFiles/miowy.dir/src
 
 build CMakeFiles/miowy.dir/src/genmove.cpp.o: CXX_COMPILER__miowy_Debug ../src/genmove.cpp || cmake_object_order_depends_target_miowy
   DEP_FILE = CMakeFiles/miowy.dir/src/genmove.cpp.o.d
-  FLAGS = -g -std=gnu++20
+  FLAGS = -g -std=gnu++11
   OBJECT_DIR = CMakeFiles/miowy.dir
   OBJECT_FILE_DIR = CMakeFiles/miowy.dir/src
 
 build CMakeFiles/miowy.dir/src/interact.cpp.o: CXX_COMPILER__miowy_Debug ../src/interact.cpp || cmake_object_order_depends_target_miowy
   DEP_FILE = CMakeFiles/miowy.dir/src/interact.cpp.o.d
-  FLAGS = -g -std=gnu++20
+  FLAGS = -g -std=gnu++11
   OBJECT_DIR = CMakeFiles/miowy.dir
   OBJECT_FILE_DIR = CMakeFiles/miowy.dir/src
 
 build CMakeFiles/miowy.dir/src/move.cpp.o: CXX_COMPILER__miowy_Debug ../src/move.cpp || cmake_object_order_depends_target_miowy
   DEP_FILE = CMakeFiles/miowy.dir/src/move.cpp.o.d
-  FLAGS = -g -std=gnu++20
+  FLAGS = -g -std=gnu++11
   OBJECT_DIR = CMakeFiles/miowy.dir
   OBJECT_FILE_DIR = CMakeFiles/miowy.dir/src
 
 build CMakeFiles/miowy.dir/src/node.cpp.o: CXX_COMPILER__miowy_Debug ../src/node.cpp || cmake_object_order_depends_target_miowy
   DEP_FILE = CMakeFiles/miowy.dir/src/node.cpp.o.d
-  FLAGS = -g -std=gnu++20
+  FLAGS = -g -std=gnu++11
   OBJECT_DIR = CMakeFiles/miowy.dir
   OBJECT_FILE_DIR = CMakeFiles/miowy.dir/src
 
 build CMakeFiles/miowy.dir/src/play.cpp.o: CXX_COMPILER__miowy_Debug ../src/play.cpp || cmake_object_order_depends_target_miowy
   DEP_FILE = CMakeFiles/miowy.dir/src/play.cpp.o.d
-  FLAGS = -g -std=gnu++20
+  FLAGS = -g -std=gnu++11
   OBJECT_DIR = CMakeFiles/miowy.dir
   OBJECT_FILE_DIR = CMakeFiles/miowy.dir/src
 
 build CMakeFiles/miowy.dir/src/shuff.cpp.o: CXX_COMPILER__miowy_Debug ../src/shuff.cpp || cmake_object_order_depends_target_miowy
   DEP_FILE = CMakeFiles/miowy.dir/src/shuff.cpp.o.d
-  FLAGS = -g -std=gnu++20
+  FLAGS = -g -std=gnu++11
   OBJECT_DIR = CMakeFiles/miowy.dir
   OBJECT_FILE_DIR = CMakeFiles/miowy.dir/src
 
 build CMakeFiles/miowy.dir/src/ui.cpp.o: CXX_COMPILER__miowy_Debug ../src/ui.cpp || cmake_object_order_depends_target_miowy
   DEP_FILE = CMakeFiles/miowy.dir/src/ui.cpp.o.d
-  FLAGS = -g -std=gnu++20
+  FLAGS = -g -std=gnu++11
   OBJECT_DIR = CMakeFiles/miowy.dir
   OBJECT_FILE_DIR = CMakeFiles/miowy.dir/src
 
 build CMakeFiles/miowy.dir/src/vec.cpp.o: CXX_COMPILER__miowy_Debug ../src/vec.cpp || cmake_object_order_depends_target_miowy
   DEP_FILE = CMakeFiles/miowy.dir/src/vec.cpp.o.d
-  FLAGS = -g -std=gnu++20
+  FLAGS = -g -std=gnu++11
   OBJECT_DIR = CMakeFiles/miowy.dir
   OBJECT_FILE_DIR = CMakeFiles/miowy.dir/src
 

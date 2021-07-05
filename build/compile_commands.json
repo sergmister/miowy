@@ -1,52 +1,52 @@
 [
 {
   "directory": "/home/sergii/programming/HIP2021/miowy/build",
-  "command": "/usr/bin/c++ -g -std=gnu++20 -o CMakeFiles/miowy.dir/src/board.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/board.cpp",
+  "command": "/usr/bin/c++ -g -std=gnu++11 -o CMakeFiles/miowy.dir/src/board.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/board.cpp",
   "file": "/home/sergii/programming/HIP2021/miowy/src/board.cpp"
 },
 {
   "directory": "/home/sergii/programming/HIP2021/miowy/build",
-  "command": "/usr/bin/c++ -g -std=gnu++20 -o CMakeFiles/miowy.dir/src/connect.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/connect.cpp",
+  "command": "/usr/bin/c++ -g -std=gnu++11 -o CMakeFiles/miowy.dir/src/connect.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/connect.cpp",
   "file": "/home/sergii/programming/HIP2021/miowy/src/connect.cpp"
 },
 {
   "directory": "/home/sergii/programming/HIP2021/miowy/build",
-  "command": "/usr/bin/c++ -g -std=gnu++20 -o CMakeFiles/miowy.dir/src/genmove.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/genmove.cpp",
+  "command": "/usr/bin/c++ -g -std=gnu++11 -o CMakeFiles/miowy.dir/src/genmove.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/genmove.cpp",
   "file": "/home/sergii/programming/HIP2021/miowy/src/genmove.cpp"
 },
 {
   "directory": "/home/sergii/programming/HIP2021/miowy/build",
-  "command": "/usr/bin/c++ -g -std=gnu++20 -o CMakeFiles/miowy.dir/src/interact.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/interact.cpp",
+  "command": "/usr/bin/c++ -g -std=gnu++11 -o CMakeFiles/miowy.dir/src/interact.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/interact.cpp",
   "file": "/home/sergii/programming/HIP2021/miowy/src/interact.cpp"
 },
 {
   "directory": "/home/sergii/programming/HIP2021/miowy/build",
-  "command": "/usr/bin/c++ -g -std=gnu++20 -o CMakeFiles/miowy.dir/src/move.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/move.cpp",
+  "command": "/usr/bin/c++ -g -std=gnu++11 -o CMakeFiles/miowy.dir/src/move.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/move.cpp",
   "file": "/home/sergii/programming/HIP2021/miowy/src/move.cpp"
 },
 {
   "directory": "/home/sergii/programming/HIP2021/miowy/build",
-  "command": "/usr/bin/c++ -g -std=gnu++20 -o CMakeFiles/miowy.dir/src/node.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/node.cpp",
+  "command": "/usr/bin/c++ -g -std=gnu++11 -o CMakeFiles/miowy.dir/src/node.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/node.cpp",
   "file": "/home/sergii/programming/HIP2021/miowy/src/node.cpp"
 },
 {
   "directory": "/home/sergii/programming/HIP2021/miowy/build",
-  "command": "/usr/bin/c++ -g -std=gnu++20 -o CMakeFiles/miowy.dir/src/play.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/play.cpp",
+  "command": "/usr/bin/c++ -g -std=gnu++11 -o CMakeFiles/miowy.dir/src/play.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/play.cpp",
   "file": "/home/sergii/programming/HIP2021/miowy/src/play.cpp"
 },
 {
   "directory": "/home/sergii/programming/HIP2021/miowy/build",
-  "command": "/usr/bin/c++ -g -std=gnu++20 -o CMakeFiles/miowy.dir/src/shuff.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/shuff.cpp",
+  "command": "/usr/bin/c++ -g -std=gnu++11 -o CMakeFiles/miowy.dir/src/shuff.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/shuff.cpp",
   "file": "/home/sergii/programming/HIP2021/miowy/src/shuff.cpp"
 },
 {
   "directory": "/home/sergii/programming/HIP2021/miowy/build",
-  "command": "/usr/bin/c++ -g -std=gnu++20 -o CMakeFiles/miowy.dir/src/ui.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/ui.cpp",
+  "command": "/usr/bin/c++ -g -std=gnu++11 -o CMakeFiles/miowy.dir/src/ui.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/ui.cpp",
   "file": "/home/sergii/programming/HIP2021/miowy/src/ui.cpp"
 },
 {
   "directory": "/home/sergii/programming/HIP2021/miowy/build",
-  "command": "/usr/bin/c++ -g -std=gnu++20 -o CMakeFiles/miowy.dir/src/vec.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/vec.cpp",
+  "command": "/usr/bin/c++ -g -std=gnu++11 -o CMakeFiles/miowy.dir/src/vec.cpp.o -c /home/sergii/programming/HIP2021/miowy/src/vec.cpp",
   "file": "/home/sergii/programming/HIP2021/miowy/src/vec.cpp"
 }
 ]
