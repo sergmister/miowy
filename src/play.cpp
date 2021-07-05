@@ -2,9 +2,9 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "board.h"
-#include "connect.h"
-#include "interact.h"
+#include "board.hpp"
+#include "connect.hpp"
+#include "interact.hpp"
 
 int main(void) {
     Board myB;  // myB.showBr();display_nearedges();

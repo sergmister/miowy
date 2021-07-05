@@ -1,5 +1,5 @@
 #pragma once
-#include "board.h"
+#include "board.hpp"
 
 static const int ROLLOUTS =
     300000;                  // about 30 000 rollouts/sec on base10 board

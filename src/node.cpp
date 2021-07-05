@@ -1,10 +1,10 @@
-#include "node.h"
+#include "node.hpp"
 
 #include <cassert>
 #include <cmath>
 #include <cstdio>
 
-#include "move.h"
+#include "move.hpp"
 
 int Node::uct_playout(Board& B, int plyr, bool useMiai) {
     if (isLeaf())

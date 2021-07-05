@@ -1,5 +1,5 @@
 #pragma once
-#include "move.h"
+#include "move.hpp"
 
 static const int N = 10;
 static const int INFNTY = 999999999;

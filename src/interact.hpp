@@ -1,4 +1,4 @@
 #pragma once
-#include "board.h"
+#include "board.hpp"
 
 void interact(Board&);

@@ -1,13 +1,13 @@
-#include "board.h"
+#include "board.hpp"
 
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
-#include "move.h"
-#include "shuff.h"
-#include "vec.h"
+#include "move.hpp"
+#include "shuff.hpp"
+#include "vec.hpp"
 
 void prtBlanks(int k) {
     for (int j = 0; j < k; j++) printf(" ");

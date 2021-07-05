@@ -1,9 +1,9 @@
-#include "vec.h"
+#include "vec.hpp"
 
 #include <cassert>
 #include <cstdio>
 
-#include "board.h"
+#include "board.hpp"
 
 int index_of_max(int A[], int k, int n) {  // index of max element in A[k..n-1]
     int x = k;

@@ -1,14 +1,14 @@
-#include "genmove.h"
+#include "genmove.hpp"
 
 #include <cassert>
 #include <cstdio>
 #include <cstring>
 
-#include "connect.h"
-#include "move.h"
-#include "node.h"
-#include "shuff.h"
-#include "vec.h"
+#include "connect.hpp"
+#include "move.hpp"
+#include "node.hpp"
+#include "shuff.hpp"
+#include "vec.hpp"
 
 int mymin(int x, int y) { return (x < y) ? x : y; }
 

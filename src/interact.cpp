@@ -1,12 +1,12 @@
-#include "interact.h"
+#include "interact.hpp"
 
 #include <cassert>
 #include <cstdio>
 
-#include "connect.h"
-#include "genmove.h"
-#include "move.h"
-#include "ui.h"
+#include "connect.hpp"
+#include "genmove.hpp"
+#include "move.hpp"
+#include "ui.hpp"
 
 void prtBye() { printf("\n ... adios ... \n\n"); }
 void prtGameOver() { printf(" game over\n"); }

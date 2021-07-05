@@ -1,4 +1,4 @@
-#include "connect.h"
+#include "connect.hpp"
 
 int Find(int Parents[], int x) {
     int px = Parents[x];

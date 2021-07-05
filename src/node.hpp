@@ -1,7 +1,7 @@
 #pragma once
 #include <cstddef>
 
-#include "board.h"
+#include "board.hpp"
 
 static const int UNKNOWN = 2;
 static const int PROVEN_WIN = 1;

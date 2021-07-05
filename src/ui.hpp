@@ -1,5 +1,5 @@
 #pragma once
-#include "board.h"
+#include "board.hpp"
 
 // static const char HELP_CH = '?';
 static const char GENMOVE_CH = '?';

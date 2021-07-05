@@ -1,5 +1,5 @@
 #pragma once
-#include "board.h"
+#include "board.hpp"
 
 //   win iff some stone-group touches all 3 borders so ...
 //   ... for each stone-group, maintain set of touched borders

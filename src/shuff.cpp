@@ -1,4 +1,4 @@
-#include "shuff.h"
+#include "shuff.hpp"
 
 #include <cstdio>
 

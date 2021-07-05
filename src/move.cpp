@@ -1,12 +1,12 @@
-#include "move.h"
+#include "move.hpp"
 
 #include <stdio.h>
 
 #include <cassert>
 
-#include "board.h"
-#include "connect.h"
-#include "shuff.h"
+#include "board.hpp"
+#include "connect.hpp"
+#include "shuff.hpp"
 
 int numSetBits(int n) {
     int count = 0;
