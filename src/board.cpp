@@ -325,16 +325,16 @@ void Board::showBr() {
 }
 
 void Board::show() {
-    prtBlanks(2);
-    for (char ch = 'a'; ch < 'a' + N; ch++) printf(" %c ", ch);
+    prtBlanks(3);
+    for (char ch = 'a'; ch < 'a' + N; ch++) printf("  %c ", ch);
     printf("\n");
     for (int j = 0; j < N; j++) {
-        prtBlanks(j);
+        prtBlanks(j * 2);
         printf("%2d ", j + 1);
         for (int k = 0; k < N - j; k++)
-            printf(" %c ", emit(board[fatten(j, k)]));
-        prtBlanks(3 * (j + 1));
-        for (int k = 0; k < N - j; k++) prtNonZero(brdr[fatten(j, k)], 2);
+            printf("  %c ", emit(board[fatten(j, k)]));
+        prtBlanks(4 * j + 3);
+        for (int k = 0; k < N - j; k++) prtNonZero(brdr[fatten(j, k)], 3);
         printf("\n");
     }
     printf("\n");
