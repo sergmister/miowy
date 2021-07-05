@@ -1,0 +1,12 @@
+# ninja log v5
+1	62	1625507273137797657	CMakeFiles/miowy.dir/src/connect.cpp.o	e641b07d9ca5eadc
+20	177	1625507273254464409	CMakeFiles/miowy.dir/src/play.cpp.o	f9e79bd8d82fdb71
+1	177	1625507273254464409	CMakeFiles/miowy.dir/src/interact.cpp.o	953ce0d2a14d7310
+4	185	1625507273271131088	CMakeFiles/miowy.dir/src/move.cpp.o	6ba0fe601c5b1020
+33	192	1625507273274464424	CMakeFiles/miowy.dir/src/shuff.cpp.o	f3d651f6677d885c
+0	203	1625507273287797767	CMakeFiles/miowy.dir/src/board.cpp.o	472c8397b46d9418
+52	209	1625507273291131103	CMakeFiles/miowy.dir/src/vec.cpp.o	bd997b8178dae1ae
+39	231	1625507273314464453	CMakeFiles/miowy.dir/src/ui.cpp.o	392b6ded06148b69
+1	270	1625507273354464482	CMakeFiles/miowy.dir/src/genmove.cpp.o	d4359a3377d34390
+7	469	1625507273554464628	CMakeFiles/miowy.dir/src/node.cpp.o	acfb03ffeb8fc6c1
+469	600	1625507273684464722	miowy	7dfb8770a45e72ee

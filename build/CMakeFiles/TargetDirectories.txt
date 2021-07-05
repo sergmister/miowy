@@ -1,0 +1,3 @@
+/home/sergii/programming/HIP2021/miowy/build/CMakeFiles/rebuild_cache.dir
+/home/sergii/programming/HIP2021/miowy/build/CMakeFiles/edit_cache.dir
+/home/sergii/programming/HIP2021/miowy/build/CMakeFiles/miowy.dir
